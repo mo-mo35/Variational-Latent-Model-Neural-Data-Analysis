@@ -1,0 +1,140 @@
+2025-01-29 13:18:16,519 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-01-29 13:30:55,657 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-01-29 13:32:33,342 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-02 20:02:58,281 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-04 21:15:27,915 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-05 02:41:50,404 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-05 02:43:22,924 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
