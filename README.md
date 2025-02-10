@@ -1,7 +1,7 @@
 # LVM-Neural-Data-Analysis
 Since we gathered the IBL data using the ONE api there is no need to download data locally before running the code. However, python 3.12>= version is required.
 
-To run the project simply run the following command "pip install -r requirements.txt" from the root directory of the project.
+To run the project simply run the following command "pip install -r requirements.txt" from the root directory of the project. Then run python run.py all in the eda directory
 
 References:
 
