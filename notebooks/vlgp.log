@@ -218,3 +218,43 @@ window : 50
 saving_interval : 1800
 callbacks : []
 parallel : False
+2025-02-09 22:21:27,482 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-09 22:31:53,884 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
