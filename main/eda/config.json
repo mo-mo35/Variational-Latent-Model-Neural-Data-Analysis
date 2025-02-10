@@ -1,0 +1,18 @@
+{
+  "bin_size": 0.05,
+  "pre_time": 0.5,
+  "post_time": 1.5,
+  "regions": [
+    "BLAa",
+    "BLAv",
+    "RT",
+    "LP",
+    "LGd-co",
+    "ORBvl",
+    "MOp",
+    "MOs",
+    "SCig",
+    "SCdg",
+    "SCiw"
+  ]
+}
