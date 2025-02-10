@@ -16,3 +16,5 @@ Kingma, D. P., & Welling, M. (2013). Auto-Encoding Variational Bayes. Proceeding
 Rubin, D. B., & Thayer, D. T. (1982). EM algorithms for ML factor analysis. Psychometrika, 47(1), 69-76. https://doi.org/10.1007/BF02293894
 
 Williams, C. K. I., & Rasmussen, C. E. (2006). Gaussian processes for machine learning. MIT Press.
+
+Zhao, Yuan, & Park, Il Memming. (2016). Variational Latent Gaussian Process for Recovering Single-Trial Dynamics from Population Spike Trains. Technical Report, Department of Neurobiology and Behavior, Department of Applied Mathematics and Statistics, Institute for Advanced Computational Sciences, Stony Brook, NY
