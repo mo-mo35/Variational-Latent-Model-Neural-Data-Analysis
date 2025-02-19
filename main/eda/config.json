@@ -1,10 +1,11 @@
 {
-  "bin_size": 0.05,
+  "bin_size": 0.025,
   "pre_time": 0.5,
   "post_time": 1.5,
   "regions": [
     "BLAa",
     "BLAv",
+    "RSPv",
     "RT",
     "LP",
     "LGd-co",
