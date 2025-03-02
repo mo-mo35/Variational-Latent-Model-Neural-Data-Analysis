@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 from src import analysis
 
 # --- Load configuration ---
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.json")
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
-
 BIN_SIZE = config["bin_size"]
 PRE_TIME = config["pre_time"]
 POST_TIME = config["post_time"]
@@ -27,7 +27,7 @@ def main():
         print(f"  {s}")
     
     # Select sessions with diverse region combinations.
-    diverse_sessions = analysis.select_diverse_sessions(region_sessions, common_sessions, max_sessions=3)
+    diverse_sessions = analysis.select_diverse_sessions(region_sessions, common_sessions, max_sessions=1)
     print(f"\nRunning full analysis on a subset of {len(diverse_sessions)} diverse sessions...")
     sensitive_clusters = analysis.run_full_analysis(diverse_sessions)
     
@@ -53,26 +53,6 @@ def main():
     if fit is None:
         print("vLGP model fitting failed.")
         return
-    
-    # Visualize the results.
-    fitted_trials = fit['trials']
-    for i, trial in enumerate(fitted_trials):
-        x_obs = trial['y']       # observed spike data (shape: nbin x n_neurons)
-        mu = trial['mu']         # inferred latent variables
-        
-        # Compute the projection from latent space back to observed space using least squares.
-        W, _, _, _ = np.linalg.lstsq(mu, x_obs, rcond=None)
-        x_proj = mu @ W
-        
-        plt.figure(figsize=(12, 6))
-        for j in range(x_obs.shape[1]):
-            offset = 2 * j
-            plt.plot(x_obs[:, j] + offset, 'b', label='Observed' if j == 0 else "")
-            plt.plot(x_proj[:, j] + offset, 'r', label='Projected' if j == 0 else "")
-        plt.title(f"Trial {i}: Observed vs. Projected Data")
-        plt.legend()
-        plt.show()
-        plt.close()
 
 if __name__ == "__main__":
     main()

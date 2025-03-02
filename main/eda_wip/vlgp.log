@@ -67,3 +67,539 @@ window : 50
 saving_interval : 1800
 callbacks : []
 parallel : False
+2025-02-27 00:29:37,641 - INFO - cache over 6 day(s) old
+2025-02-27 00:29:38,684 - INFO - No newer cache available
+2025-02-27 00:46:01,959 - WARNING - local md5 mismatch on dataset: cortexlab/Subjects/KS016/2019-12-09/001/alf/_ibl_trials.goCueTrigger_times.npy
+2025-02-27 00:56:26,417 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-27 03:17:45,392 - INFO - cache over 6 day(s) old
+2025-02-27 03:17:46,435 - INFO - No newer cache available
+2025-02-27 03:18:57,928 - INFO - cache over 6 day(s) old
+2025-02-27 03:18:58,933 - INFO - No newer cache available
+2025-02-27 03:50:16,920 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-27 03:50:58,094 - INFO - cache over 6 day(s) old
+2025-02-27 03:50:59,223 - INFO - No newer cache available
+2025-02-27 04:11:35,676 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-27 04:31:34,374 - INFO - cache over 6 day(s) old
+2025-02-27 04:31:35,588 - INFO - No newer cache available
+2025-02-27 05:03:56,546 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 03:41:33,780 - INFO - cache over 7 day(s) old
+2025-02-28 03:41:34,968 - INFO - No newer cache available
+2025-02-28 03:48:28,175 - INFO - cache over 7 day(s) old
+2025-02-28 03:48:29,214 - INFO - No newer cache available
+2025-02-28 03:51:14,332 - INFO - cache over 7 day(s) old
+2025-02-28 03:51:15,360 - INFO - No newer cache available
+2025-02-28 04:01:55,006 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 04:20:34,912 - INFO - cache over 7 day(s) old
+2025-02-28 04:20:36,070 - INFO - No newer cache available
+2025-02-28 04:31:12,645 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 04:49:00,538 - INFO - cache over 7 day(s) old
+2025-02-28 04:49:01,747 - INFO - No newer cache available
+2025-02-28 04:59:52,899 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 05:25:45,587 - INFO - cache over 7 day(s) old
+2025-02-28 05:25:46,615 - INFO - No newer cache available
+2025-02-28 05:36:41,303 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 22:03:29,602 - INFO - cache over 8 day(s) old
+2025-02-28 22:03:30,886 - INFO - No newer cache available
+2025-02-28 22:14:23,134 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 22:15:20,298 - INFO - cache over 8 day(s) old
+2025-02-28 22:15:21,427 - INFO - No newer cache available
+2025-02-28 22:15:27,389 - INFO - cache over 8 day(s) old
+2025-02-28 22:15:28,432 - INFO - No newer cache available
+2025-02-28 22:26:35,116 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-28 23:14:30,240 - INFO - cache over 8 day(s) old
+2025-02-28 23:14:31,540 - INFO - No newer cache available
+2025-02-28 23:25:29,957 - INFO - cache over 8 day(s) old
+2025-02-28 23:25:31,070 - INFO - No newer cache available
+2025-02-28 23:39:17,008 - INFO - cache over 8 day(s) old
+2025-02-28 23:39:18,094 - INFO - No newer cache available
+2025-02-28 23:50:22,992 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 01:34:35,585 - INFO - cache over 8 day(s) old
+2025-03-01 01:34:36,666 - INFO - No newer cache available
+2025-03-01 01:45:28,550 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 01:48:31,682 - INFO - cache over 8 day(s) old
+2025-03-01 01:48:38,051 - INFO - cache over 8 day(s) old
+2025-03-01 01:48:39,195 - INFO - No newer cache available
+2025-03-01 02:00:23,644 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 02:15:40,405 - INFO - cache over 8 day(s) old
+2025-03-01 02:15:41,620 - INFO - No newer cache available
+2025-03-01 03:39:35,364 - INFO - cache over 8 day(s) old
+2025-03-01 03:39:36,549 - INFO - No newer cache available
+2025-03-01 03:51:58,114 - INFO - cache over 8 day(s) old
+2025-03-01 03:51:59,130 - INFO - No newer cache available
+2025-03-01 04:03:45,279 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 04:14:10,781 - INFO - cache over 8 day(s) old
+2025-03-01 04:14:11,901 - INFO - No newer cache available
+2025-03-01 04:25:49,787 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 04:51:50,336 - INFO - cache over 8 day(s) old
+2025-03-01 04:51:51,427 - INFO - No newer cache available
+2025-03-01 05:03:28,928 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 05:10:52,942 - INFO - cache over 8 day(s) old
+2025-03-01 05:10:53,985 - INFO - No newer cache available
+2025-03-01 05:23:16,315 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 05:33:57,821 - INFO - cache over 8 day(s) old
+2025-03-01 05:33:58,940 - INFO - No newer cache available
+2025-03-01 05:52:37,087 - INFO - cache over 8 day(s) old
+2025-03-01 05:52:38,133 - INFO - No newer cache available
+2025-03-01 06:05:09,083 - INFO - cache over 8 day(s) old
+2025-03-01 06:05:10,187 - INFO - No newer cache available
+2025-03-01 06:17:16,303 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 06:37:18,730 - INFO - cache over 8 day(s) old
+2025-03-01 06:37:19,997 - INFO - No newer cache available
+2025-03-01 06:46:59,812 - INFO - cache over 8 day(s) old
+2025-03-01 06:47:00,928 - INFO - No newer cache available
+2025-03-01 06:53:33,148 - INFO - cache over 8 day(s) old
+2025-03-01 06:53:34,214 - INFO - No newer cache available
+2025-03-01 07:09:28,720 - INFO - cache over 8 day(s) old
+2025-03-01 07:09:29,779 - INFO - No newer cache available
+2025-03-01 07:10:28,246 - INFO - cache over 8 day(s) old
+2025-03-01 07:10:29,251 - INFO - No newer cache available
+2025-03-01 07:22:26,905 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 16:30:10,345 - INFO - cache over 9 day(s) old
+2025-03-01 16:30:11,527 - INFO - No newer cache available
+2025-03-01 16:42:16,336 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 17:28:53,835 - INFO - cache over 9 day(s) old
+2025-03-01 17:28:54,998 - INFO - No newer cache available
+2025-03-01 17:41:06,700 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 17:55:59,646 - INFO - cache over 9 day(s) old
+2025-03-01 17:56:00,881 - INFO - No newer cache available
+2025-03-01 18:08:26,432 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-01 19:42:04,311 - INFO - cache over 9 day(s) old
+2025-03-01 19:42:05,516 - INFO - No newer cache available
+2025-03-01 19:54:41,155 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 60
+saving_interval : 1800
+callbacks : []
+parallel : False

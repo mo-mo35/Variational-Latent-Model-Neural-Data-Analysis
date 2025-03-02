@@ -17,11 +17,9 @@ plt.ion()
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.json")
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
-
 BIN_SIZE = config["bin_size"]
 PRE_TIME = config["pre_time"]
 POST_TIME = config["post_time"]
-
 # --- ONE API and Allen Atlas ---
 ba = AllenAtlas()
 one = ONE()
@@ -122,6 +120,9 @@ def run_full_analysis(sessions):
             stim_spike_raster, stim_times = bin_spikes(spike_times, stimulus_events,
                                                        pre_time=PRE_TIME, post_time=POST_TIME, bin_size=BIN_SIZE)
             stim_spike_raster = stim_spike_raster / BIN_SIZE
+
+            print(stim_spike_raster.shape)
+
 
             move_spike_raster, move_times = bin_spikes(spike_times, movement_events,
                                                        pre_time=PRE_TIME, post_time=POST_TIME, bin_size=BIN_SIZE)
@@ -366,12 +367,12 @@ def select_diverse_sessions(region_sessions, common_sessions, max_sessions=30):
         
     return selected_sessions
 
-def run_vlgp_model(stimulus_events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, sensitive_cluster_ids=None):
+def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, sensitive_cluster_ids=None):
     """
     Create trials from stimulus-aligned spike data and fit the vLGP model using sensitive clusters.
     
     Parameters:
-      stimulus_events: 1D NumPy array of stimulus onset times (from sl.trials['stimOn_times'])
+      events: 1D NumPy array of event onset times (for example, from sl.trials['stimOn_times'])
       spikes: object with spikes.times and spikes.clusters
       clusters: object/dict with clusters['label'] and clusters['acronym']
       BIN_SIZE, PRE_TIME, POST_TIME: binning parameters (from your config)
@@ -381,15 +382,9 @@ def run_vlgp_model(stimulus_events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_T
     Returns:
       fit: dictionary returned by vlgp.fit, which includes the fitted trial information.
     """
-    # If sensitive_cluster_ids not provided, select clusters based on default criteria.
-    if sensitive_cluster_ids is None:
-        valid_mask = (clusters['label'] == 1) & np.isin(clusters['acronym'].astype(str), config["regions"])
-        sensitive_cluster_ids = np.where(valid_mask)[0]
-    
     print("Using sensitive clusters (IDs):", sensitive_cluster_ids)
     
-    n_trials = len(stimulus_events)
-    nbin = int((POST_TIME - PRE_TIME) / BIN_SIZE)
+    n_trials = len(events)
     trials_vlgp = []
     
     # For each stimulus event (each trial), bin the spike counts for the sensitive clusters.
@@ -398,10 +393,10 @@ def run_vlgp_model(stimulus_events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_T
         for cluster in sensitive_cluster_ids:
             spikes_idx = (spikes.clusters == cluster)
             spike_times = spikes.times[spikes_idx]
-            event_time = stimulus_events[trial_idx]
+            event_time = events[trial_idx]
             # Bin spikes (bin_spikes returns an array of shape (1, nbin))
             binned_spikes, trial_times = bin_spikes(spike_times,
-                                                    np.array([event_time]),
+                                                    events,
                                                     pre_time=PRE_TIME,
                                                     post_time=POST_TIME,
                                                     bin_size=BIN_SIZE)
@@ -410,6 +405,7 @@ def run_vlgp_model(stimulus_events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_T
             trial_neuron_data.append(binned_spikes[0])
         # Form a trial matrix with shape (nbin, n_neurons)
         trial_matrix = np.column_stack(trial_neuron_data)
+        print(f"Trial {trial_idx} matrix shape: {trial_matrix.shape}")
         trials_vlgp.append({'ID': trial_idx, 'y': trial_matrix})
     
     print("Created", len(trials_vlgp), "trials for vLGP model.")
