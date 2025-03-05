@@ -76,19 +76,33 @@ def load_data(session):
         return None
 
 def run_full_analysis(sessions):
+    """
+    For each session and for each valid cluster:
+      (1) For each event type (stimulus, movement, reward):
+            - Bin the spikes.
+            - Run a permutation test with FDR correction across time bins (per cell).
+            - Plot the permutation test results.
+            - Plot PSTH comparisons (left/right and correct/incorrect).
+      (2) After processing all event types for the cluster, perform contrast comparisons 
+          (bar graphs) once using stimulus event data.
+      (3) Apply Bonferroni correction across cells based on the new false positive pipeline.
+    
+    Returns:
+      result_clusters[session] = {
+           "stimulus": [(cluster_id, region), ...],
+           "movement": [(cluster_id, region), ...],
+           "reward": [(cluster_id, region), ...]
+      }
+    """
     if not sessions:
         print("No sessions to process. Exiting analysis.")
-        return
+        return {}
 
     print(f"\nStarting analysis on {len(sessions)} sessions (each appearing in at least 2 regions)...")
-
-    # Containers to accumulate significant clusters for each event type over all sessions.
     result_clusters = {}
+    alpha = 0.005  # significance threshold
 
     for session in sessions:
-        significant_stim_clusters = []
-        significant_movement_clusters = []
-        significant_reward_clusters = []
         print(f"\n=== Processing session: {session} ===")
         data = load_data(session)
         if data is None:
@@ -97,256 +111,240 @@ def run_full_analysis(sessions):
 
         sl, spikes, clusters, channels, stimulus_events, movement_events, reward_events = data
 
+        # Define event times.
+        event_times = {
+            "stimulus": stimulus_events,
+            "movement": movement_events,
+            "reward": reward_events
+        }
+
         clusters_acronyms = clusters['acronym'].astype(str)
         valid_mask = (clusters['label'] == 1) & np.isin(clusters_acronyms, config["regions"])
         valid_cluster_ids = np.where(valid_mask)[0]
-
         if len(valid_cluster_ids) == 0:
             print(f"No valid clusters in session {session}. Skipping.")
             continue
 
-        # Check that this session's clusters come from at least 2 regions.
         valid_regions = np.unique(clusters_acronyms[valid_cluster_ids])
         if len(valid_regions) < 2:
             print(f"Session {session} has clusters only from {valid_regions}. Skipping analysis.")
             continue
-        print(f"Session {session} has clusters from {valid_regions}.")
+        print(f"Session {session} has clusters from regions: {valid_regions}")
 
+        # Containers for cell-level false positive p-values.
+        cell_summary = {"stimulus": [], "movement": [], "reward": []}
+        # Containers for plotting-based significance (for visual feedback).
+        significant_stim_clusters = []
+        significant_movement_clusters = []
+        significant_reward_clusters = []
+
+        # Precompute condition indices (per session).
+        left_idx = ~np.isnan(sl.trials['contrastLeft'])
+        right_idx = ~np.isnan(sl.trials['contrastRight'])
+        correct_idx = sl.trials['feedbackType'] == 1
+        incorrect_idx = sl.trials['feedbackType'] == -1
+
+        # Loop over each valid cluster.
         for cluster in valid_cluster_ids:
             spikes_idx = (spikes.clusters == cluster)
             spike_times = spikes.times[spikes_idx]
-            
-            # Bin spikes for each event type.
-            stim_spike_raster, stim_times = bin_spikes(spike_times, stimulus_events,
-                                                       pre_time=PRE_TIME, post_time=POST_TIME, bin_size=BIN_SIZE)
-            stim_spike_raster = stim_spike_raster / BIN_SIZE
+            region_label = clusters['acronym'][cluster]
 
-            print(stim_spike_raster.shape)
+            # Process every event type for permutation test and PSTH.
+            for event_type in ["stimulus", "movement", "reward"]:
+                events = event_times[event_type]
+                # Bin spikes for current event type.
+                binned_spikes, trial_times = bin_spikes(spike_times,
+                                                        events,
+                                                        pre_time=PRE_TIME,
+                                                        post_time=POST_TIME,
+                                                        bin_size=BIN_SIZE)
+                # Convert counts to firing rate.
+                spike_raster = binned_spikes / BIN_SIZE
+                n_bins = spike_raster.shape[1]
 
+                # --------------------
+                # False Positive:
+                # --------------------
+                obs_diff = np.zeros(n_bins)
+                for i in range(n_bins):
+                    obs_diff[i] = np.nanmean(spike_raster[left_idx, i]) - np.nanmean(spike_raster[right_idx, i])
+                n_shuffles = 1000
+                null_diffs = np.zeros((n_shuffles, n_bins))
+                for shuff in range(n_shuffles):
+                    shuffled_left = np.random.permutation(left_idx)
+                    shuffled_right = np.random.permutation(right_idx)
+                    for i in range(n_bins):
+                        null_diffs[shuff, i] = np.nanmean(spike_raster[shuffled_left, i]) - \
+                                               np.nanmean(spike_raster[shuffled_right, i])
+                pvals = np.mean(np.abs(null_diffs) >= np.abs(obs_diff), axis=0)
+                reject_fdr, pvals_fdr, _, _ = multipletests(pvals, alpha=alpha, method='fdr_bh')
+                cell_p = np.min(pvals_fdr)  # summary statistic per cell for this event
+                cell_summary[event_type].append((cluster, cell_p, region_label))
 
-            move_spike_raster, move_times = bin_spikes(spike_times, movement_events,
-                                                       pre_time=PRE_TIME, post_time=POST_TIME, bin_size=BIN_SIZE)
-            move_spike_raster = move_spike_raster / BIN_SIZE
+                # --------------------
+                # Permutation Test Plot:
+                # --------------------
+                d = np.zeros(spike_raster.shape[1])
+                for i in range(spike_raster.shape[1]):
+                    d[i] = np.nanmean(spike_raster[right_idx, i]) - np.nanmean(spike_raster[left_idx, i])
+                null_d = np.zeros((n_shuffles, spike_raster.shape[1]))
+                for shuff in range(n_shuffles):
+                    shuffled_left = np.random.permutation(left_idx)
+                    shuffled_right = np.random.permutation(right_idx)
+                    for i in range(spike_raster.shape[1]):
+                        null_d[shuff, i] = np.nanmean(spike_raster[shuffled_right, i]) - \
+                                           np.nanmean(spike_raster[shuffled_left, i])
+                p_values = np.mean(np.abs(null_d) >= np.abs(d), axis=0)
+                bonferroni_threshold = alpha / spike_raster.shape[1]
+                bonf_reject = p_values < bonferroni_threshold
+                remaining_p = p_values[bonf_reject]
+                if len(remaining_p) > 0:
+                    _, p_fdr_corrected, _, _ = multipletests(remaining_p, alpha=alpha, method='fdr_bh')
+                    final_reject = np.copy(bonf_reject)
+                    final_reject[bonf_reject] = p_fdr_corrected < alpha
+                else:
+                    final_reject = np.zeros_like(p_values, dtype=bool)
+                
+                # Append to plotting-based significance list.
+                if event_type == "stimulus" and np.count_nonzero(final_reject) > 5:
+                    significant_stim_clusters.append((cluster, region_label))
+                elif event_type == "movement" and np.count_nonzero(final_reject) > 5:
+                    significant_movement_clusters.append((cluster, region_label))
+                elif event_type == "reward" and np.count_nonzero(final_reject) > 5:
+                    significant_reward_clusters.append((cluster, region_label))
 
-            reward_spike_raster, reward_times = bin_spikes(spike_times, reward_events,
-                                                           pre_time=PRE_TIME, post_time=POST_TIME, bin_size=BIN_SIZE)
-            reward_spike_raster = reward_spike_raster / BIN_SIZE
+                # Plot the permutation test results.
+                plt.figure(figsize=(10, 5))
+                plt.plot(trial_times, d, label="Observed Δ Firing Rate", color='blue')
+                plt.title(f"Δd Firing Rate by Bin (rejection level 0.5%)\nEvent: {event_type}, Cluster: {cluster}, Region: {region_label}")
+                plt.axvline(0, color='black', linestyle='--', linewidth=2, label="Event Onset")
+                plt.axhline(0, color='gray', linestyle='--', linewidth=1)
+                lower_bound = np.percentile(null_d, 0.25, axis=0)
+                upper_bound = np.percentile(null_d, 99.75, axis=0)
+                plt.fill_between(trial_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
+                plt.fill_between(trial_times, d, where=final_reject, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
+                plt.legend()
+                plt.show(block=False)
+                plt.pause(2.5)
+                plt.close()
 
-            print(f"\nProcessing cluster #{cluster} from region {clusters['acronym'][cluster]}")
-            # Compute PSTHs for stimulus-aligned trials.
-            left_idx = ~np.isnan(sl.trials['contrastLeft'])
-            right_idx = ~np.isnan(sl.trials['contrastRight'])
-            psth_left = np.nanmean(stim_spike_raster[left_idx], axis=0)
-            psth_right = np.nanmean(stim_spike_raster[right_idx], axis=0)
-            
-            correct_idx = sl.trials['feedbackType'] == 1
-            incorrect_idx = sl.trials['feedbackType'] == -1
-            psth_correct = np.nanmean(stim_spike_raster[correct_idx], axis=0)
-            psth_incorrect = np.nanmean(stim_spike_raster[incorrect_idx], axis=0)
+                # --------------------
+                # PSTH Plots for current event type.
+                # --------------------
+                psth_left = np.nanmean(spike_raster[left_idx], axis=0)
+                psth_right = np.nanmean(spike_raster[right_idx], axis=0)
+                psth_correct = np.nanmean(spike_raster[correct_idx], axis=0)
+                psth_incorrect = np.nanmean(spike_raster[incorrect_idx], axis=0)
 
-            # ------ Permutation testing for stimulus onset event --------------
-            n_shuffles = 1000
-            stim_d = np.zeros(stim_spike_raster.shape[1])
-            stim_shuffled_d = np.zeros((n_shuffles, stim_spike_raster.shape[1]))
-            for i in range(stim_spike_raster.shape[1]):
-                stim_d[i] = np.nanmean(stim_spike_raster[right_idx, i]) - np.nanmean(stim_spike_raster[left_idx, i])
-            for shuff in range(n_shuffles):
-                shuffled_left = np.random.permutation(left_idx)
-                shuffled_right = np.random.permutation(right_idx)
-                for i in range(stim_spike_raster.shape[1]):
-                    stim_shuffled_d[shuff, i] = np.nanmean(stim_spike_raster[shuffled_right, i]) - np.nanmean(stim_spike_raster[shuffled_left, i])
-            stim_p_values = np.mean(np.abs(stim_shuffled_d) >= np.abs(stim_d), axis=0)
-            alpha = 0.005
-            bonferroni_threshold = alpha / stim_spike_raster.shape[1]
-            stim_bonferroni_reject = stim_p_values < bonferroni_threshold
-            remaining_p_values = stim_p_values[stim_bonferroni_reject]
-            if len(remaining_p_values) > 0:
-                _, stim_p_fdr_corrected, _, _ = multipletests(remaining_p_values, alpha=alpha, method='fdr_bh')
-                stim_final_reject = np.copy(stim_bonferroni_reject)
-                stim_final_reject[stim_bonferroni_reject] = stim_p_fdr_corrected < alpha
-            else:
-                stim_final_reject = np.zeros_like(stim_p_values, dtype=bool)
-            if np.count_nonzero(stim_final_reject) > 5:
-                significant_stim_clusters.append((cluster, clusters['acronym'][cluster]))
-            
-            # Plot stimulus event results without blocking:
-            plt.figure(figsize=(10, 5))
-            plt.plot(stim_times, stim_d, label="Observed Δ Firing Rate", color='blue')
-            plt.title(f"Change in Δd firing rate by bin, rejection level 0.5%, event: stimOn, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
-            plt.axvline(0, color='black', linestyle='--', linewidth=2, label="Event Onset")
-            plt.axhline(0, color='gray', linestyle='--', linewidth=1)
-            lower_bound = np.percentile(stim_shuffled_d, 0.25, axis=0)
-            upper_bound = np.percentile(stim_shuffled_d, 99.75, axis=0)
-            plt.fill_between(stim_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
-            plt.fill_between(stim_times, stim_d, where=stim_final_reject, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
-            plt.legend()
-            plt.show(block=False)
-            plt.pause(2.5)  # brief pause to render the plot
-            plt.close()
+                fig, axs = plt.subplots(1, 2)
+                axs[0].plot(trial_times, psth_left, c='green')
+                axs[0].plot(trial_times, psth_right, c='yellow')
+                axs[0].legend(['left', 'right'])
+                axs[0].axvline(0, c='k', linestyle='--')
+                axs[0].set_xlabel(f"Time from {event_type} (s)")
+                axs[0].set_ylabel('Firing rate (Hz)')
+                
+                axs[1].plot(trial_times, psth_correct, c='blue')
+                axs[1].plot(trial_times, psth_incorrect, c='red')
+                axs[1].legend(['correct', 'incorrect'])
+                axs[1].axvline(0, c='k', linestyle='--')
+                axs[1].set_xlabel(f"Time from {event_type} (s)")
+                fig.suptitle(f"Firing Rate after {event_type} Event\nCluster: {cluster}, Region: {region_label}")
+                plt.show(block=False)
+                plt.pause(2.5)
+                plt.close()
 
-            # ------ Permutation testing for movement event --------------
-            movement_d = np.zeros(move_spike_raster.shape[1])
-            shuffled_movement_d = np.zeros((n_shuffles, move_spike_raster.shape[1]))
-            for i in range(move_spike_raster.shape[1]):
-                movement_d[i] = np.nanmean(move_spike_raster[right_idx, i]) - np.nanmean(move_spike_raster[left_idx, i])
-            for shuff in range(n_shuffles):
-                shuffled_left = np.random.permutation(left_idx)
-                shuffled_right = np.random.permutation(right_idx)
-                for i in range(move_spike_raster.shape[1]):
-                    shuffled_movement_d[shuff, i] = np.nanmean(move_spike_raster[shuffled_right, i]) - np.nanmean(move_spike_raster[shuffled_left, i])
-            movement_p_values = np.mean(np.abs(shuffled_movement_d) >= np.abs(movement_d), axis=0)
-            bonferroni_threshold = alpha / move_spike_raster.shape[1]
-            movement_bonferroni_reject = movement_p_values < bonferroni_threshold
-            remaining_p_values = movement_p_values[movement_bonferroni_reject]
-            if len(remaining_p_values) > 0:
-                _, movement_p_fdr_corrected, _, _ = multipletests(remaining_p_values, alpha=alpha, method='fdr_bh')
-                movement_final_reject = np.copy(movement_bonferroni_reject)
-                movement_final_reject[movement_bonferroni_reject] = movement_p_fdr_corrected < alpha
-            else:
-                movement_final_reject = np.zeros_like(movement_p_values, dtype=bool)
-            if np.count_nonzero(movement_final_reject) > 5:
-                significant_movement_clusters.append((cluster, clusters['acronym'][cluster]))
-            
-            plt.figure(figsize=(10, 5))
-            plt.plot(move_times, movement_d, label="Observed Δ Firing Rate", color='blue')
-            plt.title(f"Change in Δd firing rate by bin, rejection level 0.5%, event: movement, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
-            plt.axvline(0, color='black', linestyle='--', linewidth=2, label="Event Onset")
-            plt.axhline(0, color='gray', linestyle='--', linewidth=1)
-            lower_bound = np.percentile(shuffled_movement_d, 0.25, axis=0)
-            upper_bound = np.percentile(shuffled_movement_d, 99.75, axis=0)
-            plt.fill_between(move_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
-            plt.fill_between(move_times, movement_d, where=movement_final_reject, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
-            plt.legend()
-            plt.show(block=False)
-            plt.pause(2.5)
-            plt.close()
+            # End event type loop for this cluster.
 
-            # ------ Permutation testing for reward event --------------
-            reward_d = np.zeros(reward_spike_raster.shape[1])
-            shuffled_reward_d = np.zeros((n_shuffles, reward_spike_raster.shape[1]))
-            for i in range(reward_spike_raster.shape[1]):
-                reward_d[i] = np.nanmean(reward_spike_raster[right_idx, i]) - np.nanmean(reward_spike_raster[left_idx, i])
-            for shuff in range(n_shuffles):
-                shuffled_left = np.random.permutation(left_idx)
-                shuffled_right = np.random.permutation(right_idx)
-                for i in range(reward_spike_raster.shape[1]):
-                    shuffled_reward_d[shuff, i] = np.nanmean(reward_spike_raster[shuffled_right, i]) - np.nanmean(reward_spike_raster[shuffled_left, i])
-            reward_p_values = np.mean(np.abs(shuffled_reward_d) >= np.abs(reward_d), axis=0)
-            bonferroni_threshold = alpha / reward_spike_raster.shape[1]
-            reward_bonferroni_reject = reward_p_values < bonferroni_threshold
-            remaining_p_values = reward_p_values[reward_bonferroni_reject]
-            if len(remaining_p_values) > 0:
-                _, reward_p_fdr_corrected, _, _ = multipletests(remaining_p_values, alpha=alpha, method='fdr_bh')
-                reward_final_reject = np.copy(reward_bonferroni_reject)
-                reward_final_reject[reward_bonferroni_reject] = reward_p_fdr_corrected < alpha
-            else:
-                reward_final_reject = np.zeros_like(reward_p_values, dtype=bool)
-            if np.count_nonzero(reward_final_reject) > 5:
-                significant_reward_clusters.append((cluster, clusters['acronym'][cluster]))
-            
-            plt.figure(figsize=(10, 5))
-            plt.plot(reward_times, reward_d, label="Observed Δ Firing Rate", color='blue')
-            plt.title(f"Change in Δd firing rate by bin, rejection level 0.5%, event: reward, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
-            plt.axvline(0, color='black', linestyle='--', linewidth=2, label="Event Onset")
-            plt.axhline(0, color='gray', linestyle='--', linewidth=1)
-            lower_bound = np.percentile(shuffled_reward_d, 0.25, axis=0)
-            upper_bound = np.percentile(shuffled_reward_d, 99.75, axis=0)
-            plt.fill_between(reward_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
-            plt.fill_between(reward_times, reward_d, where=reward_final_reject, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
-            plt.legend()
-            plt.show(block=False)
-            plt.pause(2.5)
-            plt.close()
-
-            ## ----- Sub-graphs: PSTHs and Contrast Comparisons --------------
-            # For brevity, the subsequent plotting sections are similarly modified:
-            # (Replace plt.show() with non-blocking calls and add a brief pause if needed.)
-            # --- Example for PSTHs for stimulus events:
-            fig, axs = plt.subplots(1, 2)
-            axs[0].plot(stim_times, psth_left, c='green')
-            axs[0].plot(stim_times, psth_right, c='yellow')
-            axs[0].legend(['left', 'right'])
-            axs[0].axvline(0, c='k', linestyle='--')
-            axs[0].set_xlabel('Time from stimulus (s)')
-            axs[0].set_ylabel('Firing rate (Hz)')
-            
-            axs[1].plot(stim_times, psth_correct, c='blue')
-            axs[1].plot(stim_times, psth_incorrect, c='red')
-            axs[1].legend(['correct', 'incorrect'])
-            axs[1].axvline(0, c='k', linestyle='--')
-            axs[1].set_xlabel('Time from stimulus (s)')
-            fig.suptitle(f"Firing rate after stimulus event, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
-            plt.show(block=False)
-            plt.pause(2.5)
-            plt.close()
+            # --------------------
+            # Contrast Comparisons (run once per cluster, independent of event loop)
+            # --------------------
+            # Bin spikes for the stimulus event separately.
+            binned_stim, stim_times = bin_spikes(spike_times,
+                                                 stimulus_events,
+                                                 pre_time=PRE_TIME,
+                                                 post_time=POST_TIME,
+                                                 bin_size=BIN_SIZE)
+            stim_spike_raster = binned_stim / BIN_SIZE
 
             contrast_levels_left = np.unique(sl.trials['contrastLeft'][~np.isnan(sl.trials['contrastLeft'])])
             contrast_levels_right = np.unique(sl.trials['contrastRight'][~np.isnan(sl.trials['contrastRight'])])
-    
-            # Initialize lists to store mean firing rates
+            
+            # Initialize lists for firing rates.
             firing_rates_correct_left = []
             firing_rates_incorrect_left = []
             firing_rates_correct_right = []
             firing_rates_incorrect_right = []
-    
-            # Compute firing rates for each contrast level
+            
             for contrast in contrast_levels_left:
                 idx = sl.trials['contrastLeft'] == contrast
                 firing_rates_correct_left.append(np.nanmean(stim_spike_raster[idx & correct_idx]))
                 firing_rates_incorrect_left.append(np.nanmean(stim_spike_raster[idx & incorrect_idx]))
-    
+            
             for contrast in contrast_levels_right:
                 idx = sl.trials['contrastRight'] == contrast
                 firing_rates_correct_right.append(np.nanmean(stim_spike_raster[idx & correct_idx]))
                 firing_rates_incorrect_right.append(np.nanmean(stim_spike_raster[idx & incorrect_idx]))
-    
-            # Convert contrast values to strings for labeling
+            
+            # Convert contrast values to string labels.
             contrast_labels_left = [str(c) for c in contrast_levels_left]
             contrast_labels_right = [str(c) for c in contrast_levels_right]
-    
-            # Plot Bar Graphs for contrastLeft
+            
+            # Plot contrast comparison bar graphs.
             fig, axs = plt.subplots(1, 2, figsize=(12, 5))
-            x = np.arange(len(contrast_levels_left))  # x-axis positions
-    
+            x = np.arange(len(contrast_levels_left))
             axs[0].bar(x - 0.2, firing_rates_correct_left, width=0.4, label='Correct', color='green')
             axs[0].bar(x + 0.2, firing_rates_incorrect_left, width=0.4, label='Incorrect', color='orange')
             axs[0].set_xticks(x)
             axs[0].set_xticklabels(contrast_labels_left)
             axs[0].set_xlabel('Contrast Left')
             axs[0].set_ylabel('Firing Rate (Hz)')
-            axs[0].set_title(f"Firing Rate by Contrast Left, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
+            axs[0].set_title(f"Firing Rate by Contrast Left Cluster: {cluster}, Region: {region_label}")
             axs[0].legend()
     
-            # Plot Bar Graphs for contrastRight
-            x = np.arange(len(contrast_levels_right))  # x-axis positions
+            x = np.arange(len(contrast_levels_right))
             axs[1].bar(x - 0.2, firing_rates_correct_right, width=0.4, label='Correct', color='green')
             axs[1].bar(x + 0.2, firing_rates_incorrect_right, width=0.4, label='Incorrect', color='orange')
             axs[1].set_xticks(x)
             axs[1].set_xticklabels(contrast_labels_right)
             axs[1].set_xlabel('Contrast Right')
             axs[1].set_ylabel('Firing Rate (Hz)')
-            axs[1].set_title(f"Firing Rate by Contrast Right, cluster: {cluster}, region: {clusters['acronym'][cluster]}")
+            axs[1].set_title(f"Firing Rate by Contrast Right Cluster: {cluster}, Region: {region_label}")
             axs[1].legend()
     
             plt.tight_layout()
             plt.show(block=False)
             plt.pause(2.5)
             plt.close()
-    
-    # At the end, print and return a dictionary with the sensitive clusters for each event type.
-        result_clusters[session] = {"stimulus": significant_stim_clusters, 
-        "movement": significant_movement_clusters,
-        "reward": significant_reward_clusters}
-    print("\nSignificant clusters by event type:")
+
+        # End cluster loop.
+        # Apply Bonferroni correction across cells for the false positive pipeline.
+        sig_clusters = {"stimulus": [], "movement": [], "reward": []}
+        for event_type in cell_summary.keys():
+            cell_p_values = np.array([item[1] for item in cell_summary[event_type]])
+            n_cells = len(cell_p_values)
+            bonf_p = np.minimum(cell_p_values * n_cells, 1.0)
+            for idx, (cluster, _, region) in enumerate(cell_summary[event_type]):
+                if bonf_p[idx] < alpha:
+                    sig_clusters[event_type].append((cluster, region))
+        result_clusters[session] = {"stimulus": sig_clusters["stimulus"],
+                                    "movement": sig_clusters["movement"],
+                                    "reward": sig_clusters["reward"]}
+        print(f"\nSession {session} significant clusters by event type:")
+        print(result_clusters[session])
+    print("\nOverall significant clusters by event type:")
     print(result_clusters)
     return result_clusters
+
+
 def select_diverse_sessions(region_sessions, common_sessions, max_sessions=30):
     """
     Given the dictionary mapping region -> sessions and the set of common sessions,
     create a mapping from session -> set of regions, then sort sessions by the number of
     regions (in descending order) and return at most max_sessions.
     """
-    session_to_regions = {}
+    session_to_regions = {}l
     for region, sessions in region_sessions.items():
         for session in sessions:
             if session in common_sessions:
@@ -393,7 +391,7 @@ def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, conf
             region_labels.append(region)
             
         trial_matrix = np.column_stack(trial_neuron_data)
-        print(f"Trial {trial_idx} matrix shape: {trial_matrix.shape}")
+        
         trials_vlgp.append({'ID': trial_idx, 'y': trial_matrix, 'regions': region_labels})
     
     print("Created", len(trials_vlgp), "trials for vLGP model.")
