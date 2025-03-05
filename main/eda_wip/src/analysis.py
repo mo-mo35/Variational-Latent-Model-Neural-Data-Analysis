@@ -367,55 +367,82 @@ def select_diverse_sessions(region_sessions, common_sessions, max_sessions=30):
         
     return selected_sessions
 
-def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, sensitive_cluster_ids=None):
-    """
-    Create trials from stimulus-aligned spike data and fit the vLGP model using sensitive clusters.
-    
-    Parameters:
-      events: 1D NumPy array of event onset times (for example, from sl.trials['stimOn_times'])
-      spikes: object with spikes.times and spikes.clusters
-      clusters: object/dict with clusters['label'] and clusters['acronym']
-      BIN_SIZE, PRE_TIME, POST_TIME: binning parameters (from your config)
-      config: configuration dictionary (to access regions)
-      sensitive_cluster_ids: optional list of cluster IDs (integers) to use
-    
-    Returns:
-      fit: dictionary returned by vlgp.fit, which includes the fitted trial information.
-    """
+
+def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, sensitive_cluster_ids):
     print("Using sensitive clusters (IDs):", sensitive_cluster_ids)
-    
     n_trials = len(events)
     trials_vlgp = []
     
-    # For each stimulus event (each trial), bin the spike counts for the sensitive clusters.
+    # For each trial, create a trial matrix with one column per sensitive cluster.
     for trial_idx in range(n_trials):
-        trial_neuron_data = []
+        trial_neuron_data = []  # binned spike data for each cluster
+        region_labels = []      # store corresponding region labels
         for cluster in sensitive_cluster_ids:
             spikes_idx = (spikes.clusters == cluster)
             spike_times = spikes.times[spikes_idx]
-            event_time = events[trial_idx]
-            # Bin spikes (bin_spikes returns an array of shape (1, nbin))
             binned_spikes, trial_times = bin_spikes(spike_times,
                                                     events,
                                                     pre_time=PRE_TIME,
                                                     post_time=POST_TIME,
                                                     bin_size=BIN_SIZE)
-            # Convert counts to firing rate (optional)
+            # Convert counts to firing rate.
             binned_spikes = binned_spikes / BIN_SIZE
             trial_neuron_data.append(binned_spikes[0])
-        # Form a trial matrix with shape (nbin, n_neurons)
+            # Get region info from clusters.
+            region = clusters['acronym'][cluster]
+            region_labels.append(region)
+            
         trial_matrix = np.column_stack(trial_neuron_data)
         print(f"Trial {trial_idx} matrix shape: {trial_matrix.shape}")
-        trials_vlgp.append({'ID': trial_idx, 'y': trial_matrix})
+        trials_vlgp.append({'ID': trial_idx, 'y': trial_matrix, 'regions': region_labels})
     
     print("Created", len(trials_vlgp), "trials for vLGP model.")
     
-    # Fit the vLGP model
-    fit = vlgp.fit(
-        trials_vlgp,
-        n_factors=3,   # adjust based on your needs
-        max_iter=20,
-        min_iter=10
-    )
+    # Adjust the number of latent factors: it must not exceed the number of neurons.
+    n_neurons = trials_vlgp[0]['y'].shape[1] if trials_vlgp else 0
+    n_factors = 3 if n_neurons >= 3 else n_neurons
+    print(f"Fitting vLGP model with n_factors = {n_factors} (n_neurons = {n_neurons})")
     
+    fit = vlgp.fit(trials_vlgp, n_factors=n_factors, max_iter=20, min_iter=10)
     return fit
+
+
+def fit_vlgp_models_by_region(result_clusters):
+    """
+    For each session and for each event type (e.g., stimulus), group sensitive clusters by region,
+    then fit a separate vLGP model for clusters from each region.
+    
+    Returns a dictionary:
+      fitted_models[session][event_type][region] = fitted_model
+    """
+    fitted_models = {}
+    for session, event_dict in result_clusters.items():
+        print(f"\n--- Fitting vLGP models for session {session} ---")
+        fitted_models[session] = {}
+        # Load session data once per session
+        data = load_data(session)
+        if data is None:
+            continue
+        sl, spikes, clusters, channels, stimulus_events, movement_events, reward_events = data
+        
+        # Dictionary to select events based on type.
+        event_times = {
+            "stimulus": stimulus_events,
+            "movement": movement_events,
+            "reward": reward_events
+        }
+        for event_type, sensitive_list in event_dict.items():
+            # Group sensitive clusters by region.
+            region_groups = {}
+            for (cluster, region) in sensitive_list:
+                region_groups.setdefault(region, []).append(cluster)
+            fitted_models[session][event_type] = {}
+            for region, cluster_list in region_groups.items():
+                print(f"Session {session}, Event {event_type}, Region {region}: Clusters {cluster_list}")
+                # Use the appropriate event times for this event type.
+                events = event_times.get(event_type, stimulus_events)
+                # Fit the vLGP model for this region group.
+                fitted_model = run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, cluster_list)
+                fitted_models[session][event_type][region] = fitted_model
+    return fitted_models
+
