@@ -8,7 +8,7 @@ from brainbox.singlecell import bin_spikes
 from iblatlas.atlas import AllenAtlas
 from statsmodels.stats.multitest import multipletests
 import vlgp
-
+import pickle
 
 # Enable interactive mode so that figures update without blocking.
 plt.ion()
@@ -81,7 +81,8 @@ def run_full_analysis(sessions):
       (1) For each event type (stimulus, movement, reward):
             - Bin the spikes.
             - Run a permutation test with FDR correction across time bins (per cell).
-            - Plot the permutation test results.
+            - Plot the permutation test results using the FDR-corrected p-values,
+              and include the null distribution (gray shading) as well.
             - Plot PSTH comparisons (left/right and correct/incorrect).
       (2) After processing all event types for the cluster, perform contrast comparisons 
           (bar graphs) once using stimulus event data.
@@ -130,8 +131,6 @@ def run_full_analysis(sessions):
             continue
         print(f"Session {session} has clusters from regions: {valid_regions}")
 
-        # Containers for cell-level false positive p-values.
-        cell_summary = {"stimulus": [], "movement": [], "reward": []}
         # Containers for plotting-based significance (for visual feedback).
         significant_stim_clusters = []
         significant_movement_clusters = []
@@ -163,7 +162,7 @@ def run_full_analysis(sessions):
                 n_bins = spike_raster.shape[1]
 
                 # --------------------
-                # New False Positive Pipeline (FDR Only):
+                # New False Positive Pipeline (using FDR correction only):
                 # --------------------
                 obs_diff = np.zeros(n_bins)
                 for i in range(n_bins):
@@ -177,59 +176,38 @@ def run_full_analysis(sessions):
                         null_diffs[shuff, i] = np.nanmean(spike_raster[shuffled_left, i]) - \
                                                np.nanmean(spike_raster[shuffled_right, i])
                 pvals = np.mean(np.abs(null_diffs) >= np.abs(obs_diff), axis=0)
-                # Apply FDR correction across time bins (per cell).
-                reject_fdr, pvals_fdr, _, _ = multipletests(pvals, alpha=alpha, method='fdr_bh')
-                cell_p = np.min(pvals_fdr)  # summary statistic per cell for this event
-                cell_summary[event_type].append((cluster, cell_p, region_label))
+                _, pvals_fdr, _, _ = multipletests(pvals, alpha=alpha, method='fdr_bh')
+                sig_bins = pvals_fdr < alpha
+                '''# Compute null distribution percentiles for shading.
+                lower_bound = np.percentile(null_diffs, 0.25, axis=0)
+                upper_bound = np.percentile(null_diffs, 99.75, axis=0)
 
                 # --------------------
-                # Permutation Test Plot:
+                # Permutation Test Plot using FDR-corrected p-values:
                 # --------------------
-                d = np.zeros(spike_raster.shape[1])
-                for i in range(spike_raster.shape[1]):
-                    d[i] = np.nanmean(spike_raster[right_idx, i]) - np.nanmean(spike_raster[left_idx, i])
-                null_d = np.zeros((n_shuffles, spike_raster.shape[1]))
-                for shuff in range(n_shuffles):
-                    shuffled_left = np.random.permutation(left_idx)
-                    shuffled_right = np.random.permutation(right_idx)
-                    for i in range(spike_raster.shape[1]):
-                        null_d[shuff, i] = np.nanmean(spike_raster[shuffled_right, i]) - \
-                                           np.nanmean(spike_raster[shuffled_left, i])
-                p_values = np.mean(np.abs(null_d) >= np.abs(d), axis=0)
-                bonferroni_threshold = alpha / spike_raster.shape[1]
-                bonf_reject = p_values < bonferroni_threshold
-                remaining_p = p_values[bonf_reject]
-                if len(remaining_p) > 0:
-                    _, p_fdr_corrected, _, _ = multipletests(remaining_p, alpha=alpha, method='fdr_bh')
-                    final_reject = np.copy(bonf_reject)
-                    final_reject[bonf_reject] = p_fdr_corrected < alpha
-                else:
-                    final_reject = np.zeros_like(p_values, dtype=bool)
                 
-                # Append to plotting-based significance list.
-                if event_type == "stimulus" and np.count_nonzero(final_reject) > 5:
-                    significant_stim_clusters.append((cluster, region_label))
-                elif event_type == "movement" and np.count_nonzero(final_reject) > 5:
-                    significant_movement_clusters.append((cluster, region_label))
-                elif event_type == "reward" and np.count_nonzero(final_reject) > 5:
-                    significant_reward_clusters.append((cluster, region_label))
-
-                # Plot the permutation test results.
-                '''plt.figure(figsize=(10, 5))
-                plt.plot(trial_times, d, label="Observed Δ Firing Rate", color='blue')
-                plt.title(f"Δd Firing Rate by Bin (FDR < {alpha})\nEvent: {event_type}, Cluster: {cluster}, Region: {region_label}")
+                plt.figure(figsize=(10, 5))
+                plt.plot(trial_times, obs_diff, label="Observed Δ Firing Rate", color='blue')
+                plt.fill_between(trial_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
+                plt.fill_between(trial_times, obs_diff, where=sig_bins, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
                 plt.axvline(0, color='black', linestyle='--', linewidth=2, label="Event Onset")
                 plt.axhline(0, color='gray', linestyle='--', linewidth=1)
-                lower_bound = np.percentile(null_d, 0.25, axis=0)
-                upper_bound = np.percentile(null_d, 99.75, axis=0)
-                plt.fill_between(trial_times, lower_bound, upper_bound, color='gray', alpha=0.3, label="Null Distribution (99.5% CI)")
-                plt.fill_between(trial_times, d, where=final_reject, color='red', alpha=0.3, label="Significant (FDR < 0.005)")
                 plt.legend()
+                plt.title(f"Δ Firing Rate by Bin (FDR corrected)\nEvent: {event_type}, Cluster: {cluster}, Region: {region_label}")
                 plt.show(block=False)
                 plt.pause(2.5)
-                plt.close()
+                plt.close()'''
 
-                # --------------------
+                # Check if this event for the cluster meets the minimum of 5 significant bins.
+                if np.count_nonzero(sig_bins) > 5:
+                    if event_type == "stimulus":
+                        significant_stim_clusters.append((cluster, region_label))
+                    elif event_type == "movement":
+                        significant_movement_clusters.append((cluster, region_label))
+                    elif event_type == "reward":
+                        significant_reward_clusters.append((cluster, region_label))
+
+                '''# --------------------
                 # PSTH Plots for current event type.
                 # --------------------
                 psth_left = np.nanmean(spike_raster[left_idx], axis=0)
@@ -253,14 +231,15 @@ def run_full_analysis(sessions):
                 fig.suptitle(f"Firing Rate after {event_type} Event\nCluster: {cluster}, Region: {region_label}")
                 plt.show(block=False)
                 plt.pause(2.5)
-                plt.close()'''
+                plt.close()
 
             # End event type loop for this cluster.
 
             # --------------------
             # Contrast Comparisons (run once per cluster, independent of event loop)
             # --------------------
-            '''binned_stim, stim_times = bin_spikes(spike_times,
+            # Bin spikes for the stimulus event separately.
+            binned_stim, stim_times = bin_spikes(spike_times,
                                                  stimulus_events,
                                                  pre_time=PRE_TIME,
                                                  post_time=POST_TIME,
@@ -270,7 +249,7 @@ def run_full_analysis(sessions):
             contrast_levels_left = np.unique(sl.trials['contrastLeft'][~np.isnan(sl.trials['contrastLeft'])])
             contrast_levels_right = np.unique(sl.trials['contrastRight'][~np.isnan(sl.trials['contrastRight'])])
             
-            # Compute firing rates for each contrast level.
+            # Initialize lists for firing rates.
             firing_rates_correct_left = []
             firing_rates_incorrect_left = []
             firing_rates_correct_right = []
@@ -286,9 +265,11 @@ def run_full_analysis(sessions):
                 firing_rates_correct_right.append(np.nanmean(stim_spike_raster[idx & correct_idx]))
                 firing_rates_incorrect_right.append(np.nanmean(stim_spike_raster[idx & incorrect_idx]))
             
+            # Convert contrast values to string labels.
             contrast_labels_left = [str(c) for c in contrast_levels_left]
             contrast_labels_right = [str(c) for c in contrast_levels_right]
             
+            # Plot contrast comparison bar graphs.
             fig, axs = plt.subplots(1, 2, figsize=(12, 5))
             x = np.arange(len(contrast_levels_left))
             axs[0].bar(x - 0.2, firing_rates_correct_left, width=0.4, label='Correct', color='green')
@@ -297,9 +278,9 @@ def run_full_analysis(sessions):
             axs[0].set_xticklabels(contrast_labels_left)
             axs[0].set_xlabel('Contrast Left')
             axs[0].set_ylabel('Firing Rate (Hz)')
-            axs[0].set_title(f"Firing Rate by Contrast Left\nCluster: {cluster}, Region: {region_label}")
+            axs[0].set_title(f"Firing Rate by Contrast Left Cluster: {cluster}, Region: {region_label}")
             axs[0].legend()
-                                        
+    
             x = np.arange(len(contrast_levels_right))
             axs[1].bar(x - 0.2, firing_rates_correct_right, width=0.4, label='Correct', color='green')
             axs[1].bar(x + 0.2, firing_rates_incorrect_right, width=0.4, label='Incorrect', color='orange')
@@ -307,7 +288,7 @@ def run_full_analysis(sessions):
             axs[1].set_xticklabels(contrast_labels_right)
             axs[1].set_xlabel('Contrast Right')
             axs[1].set_ylabel('Firing Rate (Hz)')
-            axs[1].set_title(f"Firing Rate by Contrast Right\nCluster: {cluster}, Region: {region_label}")
+            axs[1].set_title(f"Firing Rate by Contrast Right Cluster: {cluster}, Region: {region_label}")
             axs[1].legend()
     
             plt.tight_layout()
@@ -316,23 +297,20 @@ def run_full_analysis(sessions):
             plt.close()'''
 
         # End cluster loop.
-        # Instead of applying a Bonferroni correction across cells, we mark a cell as significant 
-        # if its FDR-corrected cell_p is below alpha.
-        sig_clusters = {"stimulus": [], "movement": [], "reward": []}
-        for event_type in cell_summary.keys():
-            for (cluster, cell_p, region) in cell_summary[event_type]:
-                if cell_p < alpha:
-                    sig_clusters[event_type].append((cluster, region))
-        result_clusters[session] = {
-            "stimulus": sig_clusters["stimulus"],
-            "movement": sig_clusters["movement"],
-            "reward": sig_clusters["reward"]
-        }
+        # Use the FDR-corrected p-values to determine significant clusters (if any event has >5 significant bins).
+        sig_clusters = {"stimulus": significant_stim_clusters,
+                        "movement": significant_movement_clusters,
+                        "reward": significant_reward_clusters}
+        result_clusters[session] = {"stimulus": sig_clusters["stimulus"],
+                                    "movement": sig_clusters["movement"],
+                                    "reward": sig_clusters["reward"]}
         print(f"\nSession {session} significant clusters by event type:")
         print(result_clusters[session])
     print("\nOverall significant clusters by event type:")
     print(result_clusters)
     return result_clusters
+
+
 
 
 def select_diverse_sessions(region_sessions, common_sessions, max_sessions=30):
@@ -399,110 +377,124 @@ def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, conf
     print(f"Fitting vLGP model with n_factors = {n_factors} (n_neurons = {n_neurons})")
     
     fit = vlgp.fit(trials_vlgp, n_factors=n_factors, max_iter=20, min_iter=10)
+    # Save the fitted model (or just the trials dictionary)
+    with open("vlgp_model.pkl", "wb") as f:
+        pickle.dump(fit, f)
     return fit
 
 
-def fit_vlgp_models_for_best_session(sensitive_clusters_best, best_session):
+def fit_vlgp_models_by_region(result_clusters, top_regions=2):
     """
-    Fits vLGP models for the best session using only the top two sensitive regions.
+    From the sensitive_clusters dictionary (structured as:
+      { session: { event_type: [(cluster, region), ...] } }
+    ),
+    this function selects the "best" session (with the most sensitive clusters overall)
+    that has sensitive clusters from at least 2 different regions. For each event type in that session,
+    it keeps only the top `top_regions` regions with the highest number of sensitive clusters,
+    then fits the vLGP models for those regions.
     
     Parameters:
-       sensitive_clusters_best (dict):
-           {
-             "stimulus": [(cluster_id, region), ...],
-             "movement": [(cluster_id, region), ...],
-             "reward": [(cluster_id, region), ...]
-           }
-       best_session: the session id (string) for the best session.
-       
+      result_clusters (dict): Dictionary containing sensitive clusters information.
+      top_regions (int): Number of top regions to select based on the count of sensitive clusters.
+      
     Returns:
-       fitted_models (dict): 
-           {
-              event_type: {
-                  region: model_object,
-                  ...
-              },
-              ...
-           }
+      fitted_models (dict): Dictionary with fitted vLGP models for the best session.
     """
-    # Count sensitive clusters per region across all event types.
-    region_counts = {}
-    for event_type, clusters in sensitive_clusters_best.items():
-        for cluster, region in clusters:
-            region_counts[region] = region_counts.get(region, 0) + 1
-
-    # Check if there are at least two regions.
-    if len(region_counts) < 2:
-        print(f"Session {best_session} does not have at least two sensitive regions. Skipping vLGP fitting.")
+    # Filter out sessions that have sensitive clusters in only one region.
+    valid_sessions = {}
+    for session, events in result_clusters.items():
+        session_regions = set()
+        for event_type, clusters in events.items():
+            for cluster, region in clusters:
+                session_regions.add(region)
+        if len(session_regions) >= 2:
+            valid_sessions[session] = events
+        else:
+            print(f"Skipping session {session} because it only has sensitive clusters from one region: {session_regions}")
+    
+    if not valid_sessions:
+        print("No sessions with sensitive clusters in at least 2 regions. Exiting model fitting.")
         return {}
 
-    # Select the top two regions (by count).
-    sorted_regions = sorted(region_counts.items(), key=lambda item: item[1], reverse=True)
-    top_regions = [region for region, count in sorted_regions[:2]]
-    print(f"Session {best_session} top regions: {top_regions}")
-
-    fitted_models = {}
-    # Loop through each event type.
-    for event_type, clusters in sensitive_clusters_best.items():
-        # Filter clusters to only include those in the top regions.
-        clusters_top = [(cluster, region) for cluster, region in clusters if region in top_regions]
-        if not clusters_top:
-            continue
-
+    # Identify the best session by total count of sensitive clusters across event types.
+    best_session = max(valid_sessions.keys(), key=lambda s: sum(len(valid_sessions[s][et]) for et in valid_sessions[s]))
+    print(f"Best session selected: {best_session}")
+    
+    # Filter sensitive clusters for the best session: for each event type, keep only top `top_regions` regions.
+    filtered_sensitive = {}
+    for event_type, clusters_list in valid_sessions[best_session].items():
+        # Count the number of clusters per region.
+        region_counts = {}
+        for cluster, region in clusters_list:
+            region_counts[region] = region_counts.get(region, 0) + 1
+        
+        # Sort regions by number of clusters in descending order and keep top `top_regions`.
+        top_region_list = sorted(region_counts.items(), key=lambda x: x[1], reverse=True)[:top_regions]
+        top_region_names = [region for region, count in top_region_list]
+        print(f"Event {event_type}: Top regions selected: {top_region_names}")
+        
+        # Filter the clusters: only keep those in the top regions.
+        filtered_sensitive[event_type] = [(cluster, region) for cluster, region in clusters_list if region in top_region_names]
+    
+    # Load session data for the best session.
+    data = load_data(best_session)
+    if data is None:
+        print("Data loading error for best session.")
+        return {}
+    sl, spikes, clusters, channels, stimulus_events, movement_events, reward_events = data
+    event_times = {
+        "stimulus": stimulus_events,
+        "movement": movement_events,
+        "reward": reward_events
+    }
+    
+    # Fit vLGP models for each event type and for each top region.
+    fitted_models = {best_session: {}}
+    for event_type, clusters_list in filtered_sensitive.items():
         # Group clusters by region.
-        region_clusters = {region: [] for region in top_regions}
-        for cluster, region in clusters_top:
-            region_clusters[region].append(cluster)
-
-        fitted_models[event_type] = {}
-        # Fit a vLGP model for each region (if there are clusters for that region).
-        for region, clusters_list in region_clusters.items():
-            if clusters_list:
-                # Assume you have a function 'fit_vlgp_for_clusters' that fits the model
-                # for the given session, event type, and list of clusters.
-                model = fit_vlgp_for_clusters(best_session, event_type, clusters_list)
-                fitted_models[event_type][region] = model
-                print(f"Fitted vLGP model for session {best_session}, event {event_type}, region {region} with {len(clusters_list)} clusters.")
-
+        region_groups = {}
+        for cluster, region in clusters_list:
+            region_groups.setdefault(region, []).append(cluster)
+        
+        fitted_models[best_session][event_type] = {}
+        for region, cluster_list in region_groups.items():
+            print(f"Fitting vLGP for Session {best_session}, Event {event_type}, Region {region} with clusters {cluster_list}")
+            # Use the appropriate event times.
+            events = event_times.get(event_type, stimulus_events)
+            # Fit the model using your existing run_vlgp_model function.
+            fitted_model = run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, config, cluster_list)
+            fitted_models[best_session][event_type][region] = fitted_model
+    
     return fitted_models
 
 
-def select_best_session_by_sensitivity(sensitive_clusters):
-    """
-    Given a dictionary of sensitive clusters per session with the structure:
-      {
-         session_id: {
-            "stimulus": [(cluster, region), ...],
-            "movement": [(cluster, region), ...],
-            "reward": [(cluster, region), ...]
-         },
-         ...
-      }
-    this function selects the session with the highest total number of sensitive clusters,
-    as long as the session has sensitive clusters in at least two unique regions.
-    
-    Returns:
-      best_session: the session id that scores best based on these criteria (or None if no session qualifies).
-    """
-    best_session = None
-    best_total_clusters = 0
 
+
+
+def filter_sensitive_clusters(sensitive_clusters, top_n_regions=2):
+    """
+    Given sensitive_clusters (a dict structured as:
+      { session: { event_type: [(cluster, region), ...] } }
+    ),
+    filter the clusters for each event type in each session to keep only the top_n_regions
+    (i.e. the regions with the highest number of sensitive clusters).
+    Returns a new dictionary in the same structure but with filtered lists.
+    """
+    filtered_sensitive = {}
     for session, event_dict in sensitive_clusters.items():
-        # Combine clusters from all event types.
-        all_clusters = []
-        for event_type in event_dict:
-            all_clusters.extend(event_dict[event_type])
-        
-        # Determine the number of unique regions.
-        unique_regions = {region for (_, region) in all_clusters}
-        
-        # Only consider sessions with at least two regions of interest.
-        if len(unique_regions) < 2:
-            continue
-        
-        total_clusters = len(all_clusters)
-        if total_clusters > best_total_clusters:
-            best_total_clusters = total_clusters
-            best_session = session
-
-    return best_session
+        filtered_sensitive[session] = {}
+        for event_type, clusters_list in event_dict.items():
+            # Group clusters by region.
+            region_groups = {}
+            for (cluster, region) in clusters_list:
+                region_groups.setdefault(region, []).append(cluster)
+            # Sort regions by the number of sensitive clusters (descending).
+            sorted_regions = sorted(region_groups.items(), key=lambda x: len(x[1]), reverse=True)
+            # Keep only the top_n_regions.
+            filtered_event = []
+            for region, clusters in sorted_regions[:top_n_regions]:
+                # Append each (cluster, region) pair.
+                for cluster in clusters:
+                    filtered_event.append((cluster, region))
+            filtered_sensitive[session][event_type] = filtered_event
+    return filtered_sensitive
