@@ -12,7 +12,7 @@ with open(CONFIG_PATH, "r") as f:
 BIN_SIZE = config["bin_size"]
 PRE_TIME = config["pre_time"]
 POST_TIME = config["post_time"]
-
+forced_session_id = "ca5404f7-297c-40f1-bbf0-5ac0a63e24f8"
 def main():
     # Run session search by region.
     print("Running session search by region...")
@@ -31,10 +31,10 @@ def main():
     print(f"\nRunning full analysis on a subset of {len(diverse_sessions)} diverse sessions...")
     
      # Run full analysis to obtain sensitive clusters per session/event type.
-    sensitive_clusters = analysis.run_full_analysis(diverse_sessions)
+    sensitive_clusters = analysis.run_full_analysis(diverse_sessions, force_session = forced_session_id)
     filtered_sensitive_clusters = analysis.filter_sensitive_clusters(sensitive_clusters, top_n_regions=2)
     # Group sensitive clusters by region for each event type and fit vLGP models.
-    fitted_models = analysis.fit_vlgp_models_by_region(filtered_sensitive_clusters)
+    fitted_models = analysis.fit_vlgp_models_by_region(filtered_sensitive_clusters, force_session = forced_session_id)
     
     # Print summary of fitted models.
     for session, event_dict in fitted_models.items():
