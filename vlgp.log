@@ -1,0 +1,4 @@
+2025-03-05 21:37:05,414 - INFO - Computing brain atlas annotations lookup table
+2025-03-05 21:37:33,655 - INFO - Cached remapping file /Users/charlie/Downloads/ONE/openalyx.internationalbrainlab.org/histology/ATLAS/Needles/Allen/annotation_25_lut_v01.npz ...
+2025-03-05 21:37:35,274 - INFO - cache over 13 day(s) old
+2025-03-05 21:37:36,967 - INFO - No newer cache available

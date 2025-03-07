@@ -258,3 +258,125 @@ window : 50
 saving_interval : 1800
 callbacks : []
 parallel : False
+2025-02-26 11:37:30,753 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-02-26 11:37:31,714 - INFO - NumExpr defaulting to 8 threads.
+2025-03-04 16:10:43,615 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-04 16:10:47,917 - INFO - NumExpr defaulting to 8 threads.
+2025-03-04 16:34:46,536 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-04 16:34:56,265 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-04 17:03:22,558 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-03-04 17:05:20,320 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 5
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
