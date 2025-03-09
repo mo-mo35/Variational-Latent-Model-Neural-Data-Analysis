@@ -155,7 +155,7 @@ typing_extensions==4.12.2
 tzdata==2024.2
 uri-template==1.3.0
 urllib3==2.2.3
-vlgp==2019.3.19
+git+https://github.com/mo-mo35/vlgp.git@master#egg=vlgp
 wcwidth==0.2.13
 webcolors==24.11.1
 webencodings==0.5.1
