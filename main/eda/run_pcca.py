@@ -553,31 +553,3 @@ fig.update_layout(scene = dict(
 
 fig.show()
 fig.write_html("scdg_stimulus_plot.html")
-
-# # #plot the R2 for pCCA model with different numbers of latents
-fig = plt.figure()
-r2_region1 = [v[0][0] for v in r2_dict.values()]
-r2_region2 = [v[0][1] for v in r2_dict.values()]
-x_tick_lst = [1,2,3,4,5,6,7,8]
-plt.plot(x_tick_lst,r2_region1, label = 'SCiw region')
-plt.plot(x_tick_lst,r2_region2, label = 'SCdg region')
-plt.xticks(np.arange(1, 9, step = 1))
-plt.xlabel('Number of Latent Variables', fontsize = 18)
-plt.ylabel('RMSE', fontsize = 18)
-plt.legend(fontsize = 10)
-plt.suptitle('R-squared plot of pCCA Output', fontsize = 18)
-fig.show()
-
-# # #plot the RMSE for pCCA model with different numbers of latents
-fig = plt.figure()
-rmse_region1 = [v[0][0] for v in rmse_dict.values()]
-rmse_region2 = [v[0][1] for v in rmse_dict.values()]
-x_tick_lst = [1,2,3,4,5,6,7,8]
-plt.plot(x_tick_lst,rmse_region1, label = 'SCiw region')
-plt.plot(x_tick_lst,rmse_region2, label = 'SCdg region')
-plt.xticks(np.arange(1, 9, step = 1))
-plt.xlabel('Number of Latent Variables', fontsize = 18)
-plt.ylabel('RMSE', fontsize = 18)
-plt.legend(fontsize = 10)
-plt.suptitle('RMSE plot of pCCA Output', fontsize = 18)
-fig.show()
