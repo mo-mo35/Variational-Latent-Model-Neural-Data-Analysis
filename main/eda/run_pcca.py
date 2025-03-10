@@ -9,7 +9,8 @@ from joblib import Parallel, delayed
 import plotly.graph_objects as go
 
 # Some parts of this pCCA implementation are from https://github.com/gwgundersen/ml/ by Gregory Gundersen
-
+mm = np.matmul
+inv = np.linalg.inv
 
 # Optimize matrix operations by using scipy.linalg where possible (faster than np.linalg)
 # and caching repeated computations
