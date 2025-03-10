@@ -32,7 +32,7 @@ fonttools==4.55.0
 fqdn==1.5.1
 fsspec==2024.10.0
 globus-sdk==3.48.0
-graphviz==0.20.3
+graphviz==0.20.3  # System install required in Docker (see Dockerfile)
 h11==0.14.0
 httpcore==1.0.7
 httpx==0.27.2
@@ -79,6 +79,7 @@ matplotlib-inline==0.1.7
 mccabe==0.7.0
 mistune==3.0.2
 mtscomp==1.0.2
+narwhals-1.29.1
 nbclient==0.10.0
 nbconvert==7.16.4
 nbformat==5.10.4
@@ -101,6 +102,7 @@ patsy==1.0.1
 phylib==2.6.0
 pillow==11.0.0
 platformdirs==4.3.6
+plotly-6.0.0
 pluggy==1.5.0
 prometheus_client==0.21.0
 prompt_toolkit==3.0.48
@@ -115,13 +117,13 @@ Pygments==2.18.0
 PyJWT==2.10.0
 pynrrd==1.1.1
 pyparsing==3.2.0
-PyQt5==5.15.11
+PyQt5==5.15.11; sys_platform == "win32"  # Only install PyQt5 on Windows
 pytest==8.3.3
 python-dateutil==2.9.0.post0
 python-json-logger==2.0.7
 pytz==2024.2
-pywin32==308
-pywinpty==2.0.14
+pywin32==308; sys_platform == "win32"  # Only install on Windows
+pywinpty==2.0.14; sys_platform == "win32"  # Only install on Windows
 PyYAML==6.0.2
 pyzmq==26.2.0
 referencing==0.35.1
