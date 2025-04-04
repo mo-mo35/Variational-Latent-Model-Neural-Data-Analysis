@@ -15,6 +15,8 @@ then,
 To run the project simply run both python files in sequence, run_vlgp.py and run_pcca.py. 
 e.g. 'python run_vlgp.py'
 
+If prompted for password for Alyx, use "international"
+
 Parameters are held in the forked vlgp repo, in preprocess.py, originally made by catniplab, see references and requirements.txt.
 
 
