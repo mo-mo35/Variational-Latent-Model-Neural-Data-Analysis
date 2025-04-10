@@ -10,7 +10,7 @@ Repository cloned, in your terminal find the main directory and use the followin
 
 then,
 
-"docker run -it --rm -v "%cd%\..:/project" -w /project/main/eda 'name_of_proj_env'"
+"docker run -it --rm -v "%cd%\\..:/project" -w /project/main/eda 'name_of_proj_env'"
 
 
 To run the project simply run both python files in sequence, run_vlgp.py and run_pcca.py. 
