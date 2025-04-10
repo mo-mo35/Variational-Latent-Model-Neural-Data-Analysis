@@ -12,7 +12,7 @@ with open(CONFIG_PATH, "r") as f:
 BIN_SIZE = config["bin_size"]
 PRE_TIME = config["pre_time"]
 POST_TIME = config["post_time"]
-forced_session_id = "ca5404f7-297c-40f1-bbf0-5ac0a63e24f8"
+forced_session_id = "11a5a93e-58a9-4ed0-995e-52279ec16b98" #"ca5404f7-297c-40f1-bbf0-5ac0a63e24f8"
 def main():
     # Run session search by region.
     print("Running session search by region...")
@@ -27,7 +27,7 @@ def main():
         print(f"  {s}")
     
     # Select sessions with diverse region combinations.
-    diverse_sessions = analysis.select_diverse_sessions(region_sessions, common_sessions, max_sessions=30)
+    diverse_sessions = analysis.select_diverse_sessions(region_sessions, common_sessions, max_sessions=50)
     print(f"\nRunning full analysis on a subset of {len(diverse_sessions)} diverse sessions...")
     
      # Run full analysis to obtain sensitive clusters per session/event type.
@@ -41,8 +41,6 @@ def main():
         for event_type, region_dict in event_dict.items():
             for region, model in region_dict.items():
                 print(f"Session {session} | Event {event_type} | Region {region} fitted model with {len(model['trials'])} trials.")
-    
-    # (Optional) You can add code here to further visualize or save the fitted models.
     
 if __name__ == "__main__":
     main()

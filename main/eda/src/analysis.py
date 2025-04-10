@@ -396,7 +396,7 @@ def run_vlgp_model(events, spikes, clusters, BIN_SIZE, PRE_TIME, POST_TIME, conf
     
     # Adjust the number of latent factors: it must not exceed the number of neurons.
     n_neurons = trials_vlgp[0]['y'].shape[1] if trials_vlgp else 0
-    n_factors = 3 if n_neurons >= 3 else n_neurons
+    n_factors = 6 if n_neurons >= 6 else n_neurons
     print(f"Fitting vLGP model with n_factors = {n_factors} (n_neurons = {n_neurons})")
     
     fit = vlgp.fit(trials_vlgp, n_factors=n_factors, max_iter=20, min_iter=10)

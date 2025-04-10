@@ -747,3 +747,255 @@ window : 50
 saving_interval : 1800
 callbacks : []
 parallel : False
+2025-04-05 10:09:17,228 - INFO - Computing brain atlas annotations lookup table
+2025-04-05 10:09:29,352 - INFO - Cached remapping file /root/Downloads/ONE/openalyx.internationalbrainlab.org/histology/ATLAS/Needles/Allen/annotation_25_lut_v01.npz ...
+2025-04-05 10:10:26,821 - INFO - Downloading remote caches...
+2025-04-05 10:13:00,389 - INFO - Computing brain atlas annotations lookup table
+2025-04-05 10:13:12,509 - INFO - Cached remapping file /root/Downloads/ONE/openalyx.internationalbrainlab.org/histology/ATLAS/Needles/Allen/annotation_25_lut_v01.npz ...
+2025-04-05 10:13:30,283 - INFO - Downloading remote caches...
+2025-04-05 10:14:02,351 - INFO - cache over 43 day(s) old
+2025-04-05 10:14:03,435 - INFO - No newer cache available
+2025-04-05 10:24:10,655 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-05 10:38:33,257 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-05 10:58:35,437 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-05 11:13:59,344 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-05 11:34:08,461 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-05 11:52:00,630 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 07:44:25,834 - INFO - Computing brain atlas annotations lookup table
+2025-04-08 07:44:37,324 - INFO - Cached remapping file /root/Downloads/ONE/openalyx.internationalbrainlab.org/histology/ATLAS/Needles/Allen/annotation_25_lut_v01.npz ...
+2025-04-08 07:45:05,183 - ERROR - ConnectionError: Failed to connect to Alyx
+2025-04-08 07:45:51,519 - INFO - Downloading remote caches...
+2025-04-08 07:57:34,343 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 08:48:17,477 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 09:03:42,344 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 09:22:54,353 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 09:44:15,403 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
+2025-04-08 10:02:42,682 - INFO - constrain_loading : fro
+constrain_latent : False
+use_hessian : True
+eps : 1e-08
+tol : 1e-08
+min_iter : 10
+method : VB
+learning_rate : 1.0
+max_iter : 20
+Eniter : 25
+Mniter : 25
+Hstep : True
+da_bound : 5.0
+db_bound : 5.0
+dmu_bound : 5.0
+omega_bound : (0.0005, 0.05)
+window : 50
+saving_interval : 1800
+callbacks : []
+parallel : False
