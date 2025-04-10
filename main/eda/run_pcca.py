@@ -211,8 +211,62 @@ def analyze_pcca_performance(X1, X2, max_components=6, scaler1=None, scaler2=Non
     return {"full_results": results}
 
 def plot_pcca_results(rmse_dict, r_squared_dict, max_components, results_folder):
-    # This function is the same as your original code but simplified
-    pass  # Omitted for brevity or keep as needed
+    x_ticks = list(range(1, max_components + 1))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 11))
+    rmse_region1 = [v[0][0] for v in rmse_dict.values()]
+    rmse_region2 = [v[0][1] for v in rmse_dict.values()]
+    total_rmse = [v[0][2] for v in rmse_dict.values()]
+    ax1.plot(x_ticks, rmse_region1, 'o-', label="Region1", linewidth=2)
+    ax1.plot(x_ticks, rmse_region2, 's-', label="Region2", linewidth=2)
+    ax1.plot(x_ticks, total_rmse, '^--', label='Total RMSE', linewidth=2, alpha=0.7)
+    ax1.grid(True, linestyle='--', alpha=0.7)
+    ax1.set_xlabel('Number of Latent Variables', fontsize=16)
+    ax1.set_ylabel('RMSE', fontsize=16)
+    ax1.set_xticks(x_ticks)
+    ax1.tick_params(axis='both', labelsize=14)
+    ax1.legend(fontsize=16)
+    ax1.set_title('RMSE by Number of Latent Variables', fontsize=18)
+    min_idx1 = np.argmin(rmse_region1)
+    min_idx2 = np.argmin(rmse_region2)
+    ax1.annotate(f'Min: {rmse_region1[min_idx1]:.4f}',
+                 xy=(x_ticks[min_idx1], rmse_region1[min_idx1]),
+                 xytext=(10, -20), textcoords='offset points', fontsize=14,
+                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+    ax1.annotate(f'Min: {rmse_region2[min_idx2]:.4f}',
+                 xy=(x_ticks[min_idx2], rmse_region2[min_idx2]),
+                 xytext=(10, 20), textcoords='offset points', fontsize=14,
+                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+    
+    r2_region1 = [v[0][0]['overall'] for v in r_squared_dict.values()]
+    r2_region2 = [v[0][1]['overall'] for v in r_squared_dict.values()]
+    r2_avg = [v[0][2] for v in r_squared_dict.values()]
+    ax2.plot(x_ticks, r2_region1, 'o-', label="Region1", linewidth=2)
+    ax2.plot(x_ticks, r2_region2, 's-', label="Region2", linewidth=2)
+    ax2.plot(x_ticks, r2_avg, '^--', label='Average R²', linewidth=2, alpha=0.7)
+    ax2.grid(True, linestyle='--', alpha=0.7)
+    ax2.set_xlabel('Number of Latent Variables', fontsize=16)
+    ax2.set_ylabel('R-squared', fontsize=16)
+    ax2.set_xticks(x_ticks)
+    ax2.tick_params(axis='both', labelsize=14)
+    ax2.set_ylim([-0.1, 1.1])
+    ax2.legend(fontsize=16, loc='upper left')
+    ax2.set_title('R-squared by Number of Latent Variables', fontsize=18)
+    max_idx1 = np.argmax(r2_region1)
+    max_idx2 = np.argmax(r2_region2)
+    ax2.annotate(f'Max: {r2_region1[max_idx1]:.4f}',
+                 xy=(x_ticks[max_idx1], r2_region1[max_idx1]),
+                 xytext=(10, -20), textcoords='offset points', fontsize=14,
+                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+    ax2.annotate(f'Max: {r2_region2[max_idx2]:.4f}',
+                 xy=(x_ticks[max_idx2], r2_region2[max_idx2]),
+                 xytext=(10, 20), textcoords='offset points', fontsize=14,
+                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+    
+    plt.suptitle('PCCA Performance Metrics', fontsize=28)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.9)
+    plt.show()
+    return fig
 
 def plot_decomposition_results(X_orig, decomp, region_label, results_folder, save_filename=None):
     """
