@@ -10,10 +10,13 @@ Repository cloned, in your terminal find the main directory and use the followin
 
 then,
 
-"docker run -it --rm 'name_of_proj_env'
+"docker run -it --rm -v "%cd%\\..:/project" -w /project/main/eda 'name_of_proj_env'"
+
 
 To run the project simply run both python files in sequence, run_vlgp.py and run_pcca.py. 
 e.g. 'python run_vlgp.py'
+
+If prompted for password for Alyx, use "international"
 
 Parameters are held in the forked vlgp repo, in preprocess.py, originally made by catniplab, see references and requirements.txt.
 
