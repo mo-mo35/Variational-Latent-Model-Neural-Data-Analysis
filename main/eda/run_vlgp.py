@@ -12,7 +12,7 @@ with open(CONFIG_PATH, "r") as f:
 BIN_SIZE = config["bin_size"]
 PRE_TIME = config["pre_time"]
 POST_TIME = config["post_time"]
-forced_session_id = "11a5a93e-58a9-4ed0-995e-52279ec16b98" #"ca5404f7-297c-40f1-bbf0-5ac0a63e24f8"
+forced_session_id = "ca5404f7-297c-40f1-bbf0-5ac0a63e24f8" # "11a5a93e-58a9-4ed0-995e-52279ec16b98"
 def main():
     # Run session search by region.
     print("Running session search by region...")
