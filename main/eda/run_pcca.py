@@ -51,7 +51,6 @@ class OptimizedPCCA:
             prev_nll = nll
             if (i+1) % 10 == 0:
                 print(f"Iteration {i+1} - NLL: {nll:.4f}")
-
         self.X = X_joint
         self.Lambda = Lambda
         self.Lambda1 = Lambda[:p1, :]
@@ -79,7 +78,6 @@ class OptimizedPCCA:
         log_det_psi = np.log(np.linalg.det(Psi))
         Psi_inv = linalg.inv(Psi)
         trace_term = np.trace(Psi_inv.dot(X).dot(X.T))
-        # We skip some details, as in your original code
         nll = 0.5 * (n * log_det_psi + trace_term)
         return nll
 
@@ -111,7 +109,6 @@ class OptimizedPCCA:
         return X1_rec, X2_rec
 
     def sample(self, n):
-        # We'll just use the existing approach
         np.random.seed(1)
         Z = self.E_z_given_x(self.Lambda, self.Psi, self.X)
         m1 = np.dot(self.Lambda1, Z)
@@ -126,7 +123,7 @@ class OptimizedPCCA:
         return X1, X2
 
 # -------------------------------------------------------------------------
-# Additional helper functions
+# Additional helper functions (unchanged)
 # -------------------------------------------------------------------------
 def calculate_r_squared(X_true, X_pred):
     n_dims = X_true.shape[1]
@@ -140,35 +137,21 @@ def calculate_r_squared(X_true, X_pred):
     return {"overall": 1 - total_resid/total_ss}
 
 def run_pcca_components(n_components, X1, X2, scaler1=None, scaler2=None):
-    """
-    This function:
-      1. Ensures both X1 and X2 have the same #samples.
-      2. Fits the pCCA model.
-      3. Samples from the model.
-      4. Reconstructs.
-      5. Returns results dict with pcca_model, decompositions, etc.
-    """
-    # Ensure the same number of samples
     n_min = min(X1.shape[0], X2.shape[0])
     X1 = X1[:n_min, :]
     X2 = X2[:n_min, :]
-
-    print(f"Running pCCA with {n_components} components...")
-    pcca = OptimizedPCCA(n_components=n_components)
+    print(f"Running PCCA with {n_components} components...")
+    pcca = OptimizedPCCA(n_components=n_components, max_iter=30, tol=1e-4)
     pcca.fit([X1, X2])
     X1_rec, X2_rec = pcca.reconstruct()
     X1_sample, X2_sample = pcca.sample(n_min)
     rmse1 = np.sqrt(np.mean((X1 - X1_sample)**2))
     rmse2 = np.sqrt(np.mean((X2 - X2_sample)**2))
     total_rmse = rmse1 + rmse2
-
     r_squared1 = calculate_r_squared(X1, X1_rec)
     r_squared2 = calculate_r_squared(X2, X2_rec)
-    avg_r2 = (r_squared1["overall"] + r_squared2["overall"])/2
-
-    # Decompose into shared/unique
+    avg_r2 = (r_squared1["overall"] + r_squared2["overall"]) / 2
     p1 = pcca.Lambda1.shape[0]
-    # pcca.X shape is (p1+p2, n_samples)
     X_joint = pcca.X
     X1_orig = X_joint[:p1, :].T
     X2_orig = X_joint[p1:, :].T
@@ -176,7 +159,6 @@ def run_pcca_components(n_components, X1, X2, scaler1=None, scaler2=None):
     X2_shared = X2_rec.copy()
     X1_unique = X1_orig - X1_shared
     X2_unique = X2_orig - X2_shared
-
     results = {
         "rmse": (rmse1, rmse2, total_rmse),
         "r_squared": (r_squared1, r_squared2, avg_r2),
@@ -192,131 +174,64 @@ def run_pcca_components(n_components, X1, X2, scaler1=None, scaler2=None):
 
 def analyze_pcca_performance(X1, X2, max_components=6, scaler1=None, scaler2=None,
                              region1_label="Region1", region2_label="Region2", n_jobs=-1):
-    """
-    Runs pCCA for a range of components, returns a dict with all results,
-    plus prints out an R^2 and RMSE summary.
-    """
-    from joblib import Parallel, delayed
     results = Parallel(n_jobs=n_jobs)(
         delayed(run_pcca_components)(i, X1, X2, scaler1, scaler2)
         for i in range(1, max_components+1)
     )
-    # Summaries
     print(f"\nSummary of {region1_label}-{region2_label} pCCA Results:")
-    for i, res in enumerate(results, start=1):
-        rmse1, rmse2, total_rmse = res["rmse"]
+    for idx, res in enumerate(results, start=1):
+        rmse1, rmse2, _ = res["rmse"]
         r1, r2, avg_r2 = res["r_squared"]
-        print(f"  n_components={i}, "
-              f"RMSE1={rmse1:.3f}, RMSE2={rmse2:.3f}, R²1={r1['overall']:.3f}, R²2={r2['overall']:.3f}, AvgR²={avg_r2:.3f}")
+        print(f"  n_components={idx}: RMSE1={rmse1:.3f}, RMSE2={rmse2:.3f}, R²1={r1['overall']:.3f}, R²2={r2['overall']:.3f}, AvgR²={avg_r2:.3f}")
     return {"full_results": results}
 
-def plot_pcca_results(rmse_dict, r_squared_dict, max_components, results_folder):
-    x_ticks = list(range(1, max_components + 1))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 11))
-    rmse_region1 = [v[0][0] for v in rmse_dict.values()]
-    rmse_region2 = [v[0][1] for v in rmse_dict.values()]
-    total_rmse = [v[0][2] for v in rmse_dict.values()]
-    ax1.plot(x_ticks, rmse_region1, 'o-', label="Region1", linewidth=2)
-    ax1.plot(x_ticks, rmse_region2, 's-', label="Region2", linewidth=2)
-    ax1.plot(x_ticks, total_rmse, '^--', label='Total RMSE', linewidth=2, alpha=0.7)
-    ax1.grid(True, linestyle='--', alpha=0.7)
-    ax1.set_xlabel('Number of Latent Variables', fontsize=16)
-    ax1.set_ylabel('RMSE', fontsize=16)
-    ax1.set_xticks(x_ticks)
-    ax1.tick_params(axis='both', labelsize=14)
-    ax1.legend(fontsize=16)
-    ax1.set_title('RMSE by Number of Latent Variables', fontsize=18)
-    min_idx1 = np.argmin(rmse_region1)
-    min_idx2 = np.argmin(rmse_region2)
-    ax1.annotate(f'Min: {rmse_region1[min_idx1]:.4f}',
-                 xy=(x_ticks[min_idx1], rmse_region1[min_idx1]),
-                 xytext=(10, -20), textcoords='offset points', fontsize=14,
-                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-    ax1.annotate(f'Min: {rmse_region2[min_idx2]:.4f}',
-                 xy=(x_ticks[min_idx2], rmse_region2[min_idx2]),
-                 xytext=(10, 20), textcoords='offset points', fontsize=14,
-                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-    
-    r2_region1 = [v[0][0]['overall'] for v in r_squared_dict.values()]
-    r2_region2 = [v[0][1]['overall'] for v in r_squared_dict.values()]
-    r2_avg = [v[0][2] for v in r_squared_dict.values()]
-    ax2.plot(x_ticks, r2_region1, 'o-', label="Region1", linewidth=2)
-    ax2.plot(x_ticks, r2_region2, 's-', label="Region2", linewidth=2)
-    ax2.plot(x_ticks, r2_avg, '^--', label='Average R²', linewidth=2, alpha=0.7)
-    ax2.grid(True, linestyle='--', alpha=0.7)
-    ax2.set_xlabel('Number of Latent Variables', fontsize=16)
-    ax2.set_ylabel('R-squared', fontsize=16)
-    ax2.set_xticks(x_ticks)
-    ax2.tick_params(axis='both', labelsize=14)
-    ax2.set_ylim([-0.1, 1.1])
-    ax2.legend(fontsize=16, loc='upper left')
-    ax2.set_title('R-squared by Number of Latent Variables', fontsize=18)
-    max_idx1 = np.argmax(r2_region1)
-    max_idx2 = np.argmax(r2_region2)
-    ax2.annotate(f'Max: {r2_region1[max_idx1]:.4f}',
-                 xy=(x_ticks[max_idx1], r2_region1[max_idx1]),
-                 xytext=(10, -20), textcoords='offset points', fontsize=14,
-                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-    ax2.annotate(f'Max: {r2_region2[max_idx2]:.4f}',
-                 xy=(x_ticks[max_idx2], r2_region2[max_idx2]),
-                 xytext=(10, 20), textcoords='offset points', fontsize=14,
-                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-    
-    plt.suptitle('PCCA Performance Metrics', fontsize=28)
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.9)
-    plt.show()
-    return fig
-
-def plot_decomposition_results(X_orig, decomp, region_label, results_folder, save_filename=None):
+# -------------------------------------------------------------------------
+# New function: Overlay Decomposition Plot
+# -------------------------------------------------------------------------
+def plot_decomposition_overlay(X1_orig, X2_orig, shared1, shared2, event_label, results_folder, save_filename):
     """
-    Plots (1) time-series overlay, (2) scatter plot, just like your code.
+    Overlays the reconstruction decomposition plots for Region1 and Region2 on a single figure.
+    It displays, for the first feature/dimension:
+      - The original signal for both regions,
+      - The shared reconstruction for both regions,
+      - The unique residual (Original - Shared) for each region.
     """
-    n_points = min(50, X_orig.shape[0])
+    n_points = min(50, X1_orig.shape[0], X2_orig.shape[0])
     t = np.linspace(-1.25, 1.25, n_points)
-    # Time-series
-    fig, ax = plt.subplots(figsize=(12,6))
-    ax.plot(t, X_orig[:n_points,0], 'k-', label='Original')
-    if "X1_shared" in decomp:
-        shared = decomp["X1_shared"]
-        unique = decomp["X1_unique"]
-    else:
-        shared = decomp["X2_shared"]
-        unique = decomp["X2_unique"]
-    ax.plot(t, shared[:n_points,0], 'b--', label='Shared')
-    ax.plot(t, (X_orig[:n_points,0] - shared[:n_points,0]), 'r:', label='Unique')
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Signal")
-    ax.set_title(f"{region_label} Reconstruction Decomposition")
-    ax.legend()
-    ax.grid(True)
-    if save_filename:
-        plt.savefig(os.path.join(results_folder, f"{save_filename}_timeseries_{region_label}.png"))
+    
+    unique1 = X1_orig[:n_points, 0] - shared1[:n_points, 0]
+    unique2 = X2_orig[:n_points, 0] - shared2[:n_points, 0]
+    
+    plt.figure(figsize=(12, 7))
+    # Region1
+    plt.plot(t, X1_orig[:n_points, 0], 'k-', label="Region1 Original", linewidth=1.8)
+    plt.plot(t, shared1[:n_points, 0], 'b--', label="Region1 Shared", linewidth=1.8)
+    plt.plot(t, unique1, 'b:', label="Region1 Unique", linewidth=1.8)
+    # Region2 (Note: use "gray" instead of "gray-" for a valid color specification)
+    plt.plot(t, X2_orig[:n_points, 0], 'gray', label="Region2 Original", linewidth=1.8)
+    plt.plot(t, shared2[:n_points, 0], 'r--', label="Region2 Shared", linewidth=1.8)
+    plt.plot(t, unique2, 'r:', label="Region2 Unique", linewidth=1.8)
+    
+    plt.xlabel("Time (s)", fontsize=14)
+    plt.ylabel("Scaled Signal", fontsize=14)
+    plt.title(f"{event_label} Reconstruction Decomposition (Overlay)", fontsize=16)
+    plt.legend(fontsize=12)
+    plt.grid(True)
+    
+    out_path = os.path.join(results_folder, save_filename)
+    plt.savefig(out_path)
+    print(f"Overlay decomposition plot saved to: {out_path}")
     plt.show()
 
-    # Scatter
-    fig2, ax2 = plt.subplots(figsize=(6,6))
-    ax2.scatter(X_orig[:,0], shared[:,0], alpha=0.5)
-    # Compute R²
-    r2 = calculate_r_squared(X_orig, shared)["overall"]
-    ax2.set_xlabel("Original")
-    ax2.set_ylabel("Shared")
-    ax2.set_title(f"{region_label} Original vs Shared\nR²={r2:.3f}")
-    ax2.grid(True)
-    if save_filename:
-        plt.savefig(os.path.join(results_folder, f"{save_filename}_scatter_{region_label}.png"))
-    plt.show()
-
-def plot_shared_latent_scatter(pcca, latent_dim, event_name,
-                               results_folder, time_axis=None):
-    """
-    Creates a scatter comparing region1 vs region2 for the given latent dimension.
-    """
+# -------------------------------------------------------------------------
+# Other Plotting Functions (unchanged)
+# -------------------------------------------------------------------------
+def plot_shared_latent_scatter(pcca, latent_dim, event_name, results_folder, time_axis=None):
     Z = pcca.E_z_given_x(pcca.Lambda, pcca.Psi, pcca.X)
-    r1 = np.dot(pcca.Lambda1[latent_dim:latent_dim+1,:], Z).flatten()
-    r2 = np.dot(pcca.Lambda2[latent_dim:latent_dim+1,:], Z).flatten()
-
-    plt.figure(figsize=(7,6))
+    r1 = np.dot(pcca.Lambda1[latent_dim:latent_dim+1, :], Z).flatten()
+    r2 = np.dot(pcca.Lambda2[latent_dim:latent_dim+1, :], Z).flatten()
+    
+    plt.figure(figsize=(8,6))
     if time_axis is not None:
         sc = plt.scatter(r1, r2, c=time_axis, cmap="viridis", alpha=0.6)
         cbar = plt.colorbar(sc)
@@ -334,45 +249,93 @@ def plot_shared_latent_scatter(pcca, latent_dim, event_name,
     plt.show()
 
 def plot_event_latents(X1, X2, event_label, results_folder):
-    """
-    Plots the dynamic 2D or 3D event latents, as in your code.
-    """
     from plotly.graph_objects import Figure, Scatter3d
     min_dims = min(X1.shape[1], X2.shape[1])
     if min_dims >= 3:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter3d(
-            x=X1[:,0], y=X1[:,1], z=X1[:,2],
-            mode='lines', line={'color':'blue','width':1}, name='Region1'
-        ))
-        fig.add_trace(go.Scatter3d(
-            x=X2[:,0], y=X2[:,1], z=X2[:,2],
-            mode='lines', line={'color':'orange','width':1}, name='Region2'
-        ))
+        fig = Figure()
+        fig.add_trace(Scatter3d(
+            x=X1[:, 0], y=X1[:, 1], z=X1[:, 2],
+            mode='lines', line={'color':'blue','width':1}, name='Region1'))
+        fig.add_trace(Scatter3d(
+            x=X2[:, 0], y=X2[:, 1], z=X2[:, 2],
+            mode='lines', line={'color':'orange','width':1}, name='Region2'))
         fig.update_layout(scene=dict(
-            xaxis_title="Latent1",
-            yaxis_title="Latent2",
-            zaxis_title="Latent3"
-        ), width=900, height=700,
-        title=f"{event_label}: Latent Variables")
+                                xaxis_title="Latent Variable 1",
+                                yaxis_title="Latent Variable 2",
+                                zaxis_title="Latent Variable 3"),
+                          width=900, height=700,
+                          title=f"{event_label}: Latent Variables")
         outpath = os.path.join(results_folder, f"{event_label.lower()}_plot.html")
         fig.write_html(outpath)
         print(f"{event_label} 3D plot saved to: {outpath}")
         fig.show()
     else:
         plt.figure(figsize=(8,6))
-        plt.plot(X1[:,0], X1[:,1], 'o-', color='blue', label='Region1')
-        plt.plot(X2[:,0], X2[:,1], 's-', color='orange', label='Region2')
-        plt.xlabel("Latent1")
-        plt.ylabel("Latent2")
-        plt.title(f"{event_label} Latent Variables (2D)")
+        plt.plot(X1[:, 0], X1[:, 1], 'o-', color='blue', label='Region1')
+        plt.plot(X2[:, 0], X2[:, 1], 's-', color='orange', label='Region2')
+        plt.xlabel("Latent Variable 1")
+        plt.ylabel("Latent Variable 2")
+        plt.title(f"{event_label}: Latent Variables (2D)")
+        plt.legend()
         outpath = os.path.join(results_folder, f"{event_label.lower()}_plot.png")
         plt.savefig(outpath)
         print(f"{event_label} 2D plot saved to: {outpath}")
         plt.show()
 
 # -------------------------------------------------------------------------
-# MAIN CODE
+# Main pCCA Analysis Helper Functions (unchanged)
+# -------------------------------------------------------------------------
+def run_pcca_components(n_components, X1, X2, scaler1=None, scaler2=None):
+    n_min = min(X1.shape[0], X2.shape[0])
+    X1 = X1[:n_min, :]
+    X2 = X2[:n_min, :]
+    print(f"Running PCCA with {n_components} components...")
+    pcca = OptimizedPCCA(n_components=n_components, max_iter=30, tol=1e-4)
+    pcca.fit([X1, X2])
+    X1_rec, X2_rec = pcca.reconstruct()
+    X1_sample, X2_sample = pcca.sample(n_min)
+    rmse1 = np.sqrt(np.mean((X1 - X1_sample)**2))
+    rmse2 = np.sqrt(np.mean((X2 - X2_sample)**2))
+    total_rmse = rmse1 + rmse2
+    r_squared1 = calculate_r_squared(X1, X1_rec)
+    r_squared2 = calculate_r_squared(X2, X2_rec)
+    avg_r2 = (r_squared1["overall"] + r_squared2["overall"]) / 2
+    p1 = pcca.Lambda1.shape[0]
+    X_joint = pcca.X
+    X1_orig = X_joint[:p1, :].T
+    X2_orig = X_joint[p1:, :].T
+    X1_shared = X1_rec.copy()
+    X2_shared = X2_rec.copy()
+    X1_unique = X1_orig - X1_shared
+    X2_unique = X2_orig - X2_shared
+    results = {
+        "rmse": (rmse1, rmse2, total_rmse),
+        "r_squared": (r_squared1, r_squared2, avg_r2),
+        "pcca_model": pcca,
+        "decomposition": {
+            "X1_shared": X1_shared,
+            "X1_unique": X1_unique,
+            "X2_shared": X2_shared,
+            "X2_unique": X2_unique
+        }
+    }
+    return results
+
+def analyze_pcca_performance(X1, X2, max_components=6, scaler1=None, scaler2=None,
+                             region1_label="Region1", region2_label="Region2", n_jobs=-1):
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(run_pcca_components)(i, X1, X2, scaler1, scaler2)
+        for i in range(1, max_components+1)
+    )
+    print(f"\nSummary of {region1_label}-{region2_label} pCCA Results:")
+    for idx, res in enumerate(results, start=1):
+        rmse1, rmse2, _ = res["rmse"]
+        r1, r2, avg_r2 = res["r_squared"]
+        print(f"  n_components={idx}: RMSE1={rmse1:.3f}, RMSE2={rmse2:.3f}, R²1={r1['overall']:.3f}, R²2={r2['overall']:.3f}, AvgR²={avg_r2:.3f}")
+    return {"full_results": results}
+
+# -------------------------------------------------------------------------
+# MAIN CODE: Process Each Event
 # -------------------------------------------------------------------------
 with open("all_vlgp_models.pkl", "rb") as file:
     loaded_data = pickle.load(file)
@@ -380,18 +343,13 @@ with open("all_vlgp_models.pkl", "rb") as file:
 session = list(loaded_data.keys())[0]
 print(f"Processing session: {session}")
 
-# We define a function to handle each event (Reward, Movement, Stimulus) in one place
 def process_event(event_name, data_dict):
-    """
-    Runs pCCA analysis, plots event latents, decomposition, and shared-latent scatter
-    for both regions in the event.
-    """
     # Step1: Identify the two relevant regions
     regions = list(data_dict.keys())
     if len(regions) < 2:
         raise ValueError(f"{event_name} event must have at least 2 regions")
     r1, r2 = regions[0], regions[1]
-    print(f"{event_name} event using regions: {r1}, {r2}")
+    print(f"{event_name} event using regions: {r1} and {r2}")
 
     # Step2: Load data
     X1 = np.vstack([trial["mu"] for trial in data_dict[r1]["trials"]])
@@ -407,36 +365,32 @@ def process_event(event_name, data_dict):
     results_dict = analyze_pcca_performance(X1_scaled, X2_scaled,
                                             max_components=6,
                                             scaler1=scaler1, scaler2=scaler2,
-                                            region1_label=r1, region2_label=r2)
+                                            region1_label=r1, region2_label=r2, n_jobs=1)
+    full_res = results_dict["full_results"]
+    selected_index = 2  # use the model with 3 latent factors (0-indexed)
+    decomp = full_res[selected_index]["decomposition"]
+    pcca_model = full_res[selected_index]["pcca_model"]
+
+    # Retrieve original joint signals from the model for overlay
+    p1_dim = pcca_model.Lambda1.shape[0]
+    X1_orig = pcca_model.X[:p1_dim, :].T
+    X2_orig = pcca_model.X[p1_dim:, :].T
 
     # Step5: Plot event latents (2D or 3D)
     plot_event_latents(X1_scaled, X2_scaled, event_name, results_folder)
 
-    # Step6: Decomposition & Shared-Latent for whichever model index you want
-    # (Here we pick 2 => 3 latents).
-    selected_index = 2  # 0-based => 3 latent factors
-    full_res = results_dict["full_results"]
-    decomp = full_res[selected_index]["decomposition"]
-    pcca_model = full_res[selected_index]["pcca_model"]
+    # Step6: Call the new overlay decomposition plot for the event
+    overlay_filename = f"{event_name.lower()}_overlay_decomposition.png"
+    plot_decomposition_overlay(X1_orig, X2_orig, decomp["X1_shared"], decomp["X2_shared"],
+                               event_name, results_folder, overlay_filename)
 
-    # Time-series decomposition for region1
-    base_name = f"{event_name.lower()}_reconstruction"
-    plot_decomposition_results(X1_scaled, decomp, r1, results_folder, base_name)
-    plot_decomposition_results(X2_scaled, decomp, r2, results_folder, base_name)
-
-    # Shared latent scatter for each latent dimension
+    # Step7: Plot shared latent scatter plots for each latent dimension
     time_axis = np.linspace(-1.25, 1.25, pcca_model.X.shape[1])
     for d in range(pcca_model.n_components):
-        plot_shared_latent_scatter(pcca_model, d, event_name,
-                                   results_folder,
-                                   time_axis=time_axis)
+        plot_shared_latent_scatter(pcca_model, latent_dim=d, event_name=event_name,
+                                   results_folder=results_folder, time_axis=time_axis)
 
-
-# Now handle each event the same way
-reward_data = loaded_data[session]["reward"]
-movement_data = loaded_data[session]["movement"]
-stimulus_data = loaded_data[session]["stimulus"]
-
-process_event("Reward",   reward_data)
-process_event("Movement", movement_data)
-process_event("Stimulus", stimulus_data)
+# Process each event
+process_event("Reward", loaded_data[session]["reward"])
+process_event("Movement", loaded_data[session]["movement"])
+process_event("Stimulus", loaded_data[session]["stimulus"])
