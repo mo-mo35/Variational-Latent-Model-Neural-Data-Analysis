@@ -1,8 +1,10 @@
+#run_vlgp.py
 import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
 from src import analysis
+import pickle
 
 # --- Load configuration ---
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
@@ -33,6 +35,7 @@ def main():
      # Run full analysis to obtain sensitive clusters per session/event type.
     sensitive_clusters = analysis.run_full_analysis(diverse_sessions, force_session = forced_session_id)
     filtered_sensitive_clusters = analysis.filter_sensitive_clusters(sensitive_clusters, top_n_regions=2)
+
     # Group sensitive clusters by region for each event type and fit vLGP models.
     fitted_models = analysis.fit_vlgp_models_by_region(filtered_sensitive_clusters, force_session = forced_session_id)
     

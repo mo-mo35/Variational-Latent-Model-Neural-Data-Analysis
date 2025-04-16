@@ -247,12 +247,7 @@ def run_full_analysis(sessions, force_session=None):
                 plt.pause(2.5)
                 plt.close()
 
-            # End event type loop for this cluster.
-
-            # --------------------
-            # Contrast Comparisons (run once per cluster, independent of event loop)
-            # --------------------
-            # Bin spikes for the stimulus event separately.
+            Bin spikes for the stimulus event separately.
             binned_stim, stim_times = bin_spikes(spike_times,
                                                  stimulus_events,
                                                  pre_time=PRE_TIME,
