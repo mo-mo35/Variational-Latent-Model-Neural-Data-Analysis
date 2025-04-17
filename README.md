@@ -3,7 +3,7 @@
 Since we gathered the IBL data using the ONE api there is no need to download data locally before running the code. However, Docker is required to launch the environment.
 
 Once you have docker installed, find a directory and clone the repository using
-'git clone https://github.com/Charlie-279/LVM-Neural-Data-Analysis.git'
+'git clone https://github.com/mo-mo35/Variational-Latent-Model-Neural-Data-Analysis.git'
 
 Repository cloned, in your terminal find the main directory and use the following command:
 "docker build -t 'name_of_proj_env' ."
