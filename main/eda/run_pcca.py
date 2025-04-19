@@ -262,7 +262,7 @@ def plot_event_latents(X1, X2, event_label, results_folder):
                                 yaxis_title="Latent Variable 2",
                                 zaxis_title="Latent Variable 3"),
                           width=900, height=700,
-                          title=f"{event_label}: 3D Latent Variables\n(Smooth & Interpretable Shared Trajectories)")
+                          title=f"{event_label}: 3D Latent Variables\n(Smooth Latent Trajectories)")
         outpath = os.path.join(results_folder, f"{event_label.lower()}_plot.html")
         fig.write_html(outpath)
         print(f"{event_label} 3D plot saved to: {outpath}")
