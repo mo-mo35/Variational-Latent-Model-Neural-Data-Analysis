@@ -155,26 +155,24 @@
   
   <strong>Superior Colliculus Intermediate White Layer (SCIW)</strong>: Contains fiber tracts that connect various layers within the superior colliculus and link it with other brain regions. While not directly processing sensory inputs, it facilitates the transmission of motor commands that underlie orienting responses and visually guided actions.
 
-  <div style="height: 1000px; position: relative;"> 
+  <figure> 
   <iframe src="assets/sciw_movement_left_right.html" style="width: 200%; height: 200%;" frameborder="0"></iframe>
-  </div>
   <br>
   <figcaption>Fig.8 - SCIW latent variables plot</figcaption>
+  </figure>
   <strong>Superior Colliculus Deep Grey Layer (SCDG)</strong>: Involved in triggering complex motor responses, particularly those related to defensive or escape behaviors. Contributes to the coordination of multisensory inputs into appropriate motor outputs, such as rapid turning or withdrawal movements in response to threats
 
-  <div style="height: 1000px; position: relative;"> 
+  <figure>
   <iframe src="assets/scdg_stimulus_left_right.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
-  </div>
-  <br>
   <figcaption>Fig.9 - SCDG Latents left/right </figcaption>
-
+  </figure>
 
   <p>We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. </p>
-  <div>
+  <figure>
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
-  </div>
   <br>
   <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
+  </figure>
   
   <br>
   <figure> 
@@ -197,13 +195,17 @@
   <h2>Conclusions</h2>
   <p>To assess the performance of our model, we decided to compute the Root Mean Squared Error (RMSE) and the R-squared coefficient. RMSE measures the average difference between predicted values and actual values. On the other hand, R-squared measures the proportion of variance explained by the latent variables in the PCCA model, or simply put, signifies how well the data fits the model. Below we measure how well the canonical directions from our pCCA fitting can capture information </p>
 
+  <figure>
   <img src="./assets/all_events_pcca_metrics.png" alt="Project Conclusions Visual Summary">
   <figcaption>Fig.13 - Root Mean Squared Error (RMSE) and R-squared</figcaption>
-
+  </figure>
+  
   <p> Perhaps obviously, our ability to reconstruct the latent variables improves the more we use, but diminishing returns in improvement can also be argued, and would require further exploration. We also tested a comparison of our work against a simple PCA model. </p>
-
+  
+  <figure>
   <img src="./assets/comparison_reward.png" alt="Project Conclusions Visual Summary">
   <figcaption>Fig.14 - Root Mean Squared Error (RMSE) and R-squared between both models</figcaption>
+  </figure>
   
   <p>Our model offers a way to find interpretable, shared and unique latent trajectories and dynamics in return for a tradeoff in accuracy and variational capture. Further work could be done in testing the robustness and strengths of the model on different quantities of latents fitted, less confident clusters, different brain regions, a different selection criteria, other methods to find shared correlations between latent structures or any combination of the above. </p>
 </section>
