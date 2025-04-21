@@ -144,7 +144,7 @@
     <p><a href="https://gregorygundersen.com/blog/2018/09/10/pcca/">Gunderson PCCA Model</a></p>
     <img src="./assets/pccaxxz.png" alt="Probabilistic Canonical Correlation Analysis Visualization">
     <figcaption>Fig.7 - Probabilistic Canonical Correlation Analysis Visualization</figcaption>
-    <p>After the IBL data is collected and cleaned, it is first put through the vLGP model to smoothen and move the data to a lower-dimensional latent space. Then, the vLGP model's output is used as the input to the pCCA model in order to conduct the analysis. With the pCCA step complete, this model can identify latent neural representations, explaining behaviors and neural dynamics across different regions of the brain.</p>
+    <p>After the IBL data is collected and cleaned, it is first put through the vLGP model to smoothen and move the data to a lower-dimensional latent space. Then, the vLGP model's output fitted to the pCCA model in order to find shared and independent behavior among the latent signals.</p>
   </article>
 </section>
 
@@ -193,14 +193,17 @@
 
 <section id="conclusions">
   <h2>Conclusions</h2>
-  <p>To assess the performance of our model, we decided to compute the Root Mean Squared Error (RMSE) and the R-squared coefficient. RMSE measures the average difference between predicted values and actual values. On the other hand, R-squared measures the proportion of variance explained by the latent variables in the PCCA model, or simply put, signifies how well the data fits the model.</p>
+  <p>To assess the performance of our model, we decided to compute the Root Mean Squared Error (RMSE) and the R-squared coefficient. RMSE measures the average difference between predicted values and actual values. On the other hand, R-squared measures the proportion of variance explained by the latent variables in the PCCA model, or simply put, signifies how well the data fits the model. Below we measure how well the canonical directions from our pCCA fitting can capture information </p>
 
-  <img src="./assets/conc.png" alt="Project Conclusions Visual Summary">
+  <img src="./assets/all_events_pcca_metrics.png" alt="Project Conclusions Visual Summary">
   <figcaption>Fig.10 - Root Mean Squared Error (RMSE) and R-squared</figcaption>
 
-  <p>Our findings showcase strong, rapid improvements in performance when utilizing 1 to 3 latent variables, but diminishing returns in improvement when using more than 3 latent variables. This suggests stronger fitting to the model as more latent variables are employed with the biggest jump in performance when using 3 latent variables. </p>
-    
-  <p>Our model offers potential for advancing our means of analysis on neural data by providing better representations that keep pace with the constantly evolving data collection methods.</p>
+  <p> Perhaps obviously, our ability to reconstruct the latent variables improves the more we use, but diminishing returns in improvement can also be argued, and would require further exploration. We also tested a comparison of our work against a simple PCA model. </p>
+
+  <img src="./assets/comparison_reward.png" alt="Project Conclusions Visual Summary">
+  <figcaption>Fig.10 - Root Mean Squared Error (RMSE) and R-squared between both models</figcaption>
+  
+  <p>Our model offers a way to find interpretable, shared and unique latent trajectories and dynamics in return for a tradeoff in accuracy and variational capture. Further work could be done in testing the robustness and strengths of the model on different quantities of latents fitted, less confident clusters, different brain regions, a different selection criteria, other methods to find shared correlations between latent structures or any combination of the above. </p>
 </section>
 
 </body>
