@@ -155,24 +155,26 @@
   
   <strong>Superior Colliculus Intermediate White Layer (SCIW)</strong>: Contains fiber tracts that connect various layers within the superior colliculus and link it with other brain regions. While not directly processing sensory inputs, it facilitates the transmission of motor commands that underlie orienting responses and visually guided actions.
 
-  <figure> 
+  <div style="height: 1000px; position: relative;"> 
   <iframe src="assets/sciw_movement_left_right.html" style="width: 200%; height: 200%;" frameborder="0"></iframe>
+  </div>
   <br>
   <figcaption>Fig.8 - SCIW latent variables plot</figcaption>
-  </figure>
   <strong>Superior Colliculus Deep Grey Layer (SCDG)</strong>: Involved in triggering complex motor responses, particularly those related to defensive or escape behaviors. Contributes to the coordination of multisensory inputs into appropriate motor outputs, such as rapid turning or withdrawal movements in response to threats
 
-  <figure>
+  <div style="height: 1000px; position: relative;"> 
   <iframe src="assets/scdg_stimulus_left_right.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
+  </div>
   <figcaption>Fig.9 - SCDG Latents left/right </figcaption>
-  </figure>
+
 
   <p>We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. </p>
-  <figure>
+  <div style="height: 1000px; position: relative;">
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
+  </div>
   <br>
   <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
-  </figure>
+
   
   <br>
   <figure> 
