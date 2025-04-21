@@ -175,26 +175,20 @@
   <div style="height: 1000px; position: relative;"> 
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
-  <br>
   <figcaption>Fig.9 - Latent Trajectories for Reward Event</figcaption>
-  <br>
   
   <div style="height: 1000px; position: relative;"> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
   </div>
-  <br>
   <figcaption>Fig.9 - Decomposition Plot for Reward Event</figcaption>
-  <br>
 
   We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
 
   <div style="height: 1000px; position: relative;"> 
   <img src="./assets/reward_shared_latent_scatter_latent_1.png" alt="Scatter plot for latent correlation">
   </div>
-  <br>
   <figcaption>Fig.9 - Correlation between latents from both regions </figcaption>
-  <br>
-  
+
 </section>
 
 <section id="conclusions">
