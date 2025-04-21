@@ -171,6 +171,14 @@
   <br>
 
   We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. 
+
+  <div style="height: 1000px; position: relative;"> 
+  <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
+  </div>
+  <br>
+  <figcaption>Fig.9 - Latent Trajectories for Reward Event</figcaption>
+  <br>
+  
   <div style="height: 1000px; position: relative;"> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
   </div>
