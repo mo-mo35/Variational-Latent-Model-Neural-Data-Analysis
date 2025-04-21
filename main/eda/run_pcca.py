@@ -166,7 +166,7 @@ def analyze_pcca_performance(X1, X2, max_components=6, scaler1=None, scaler2=Non
     return {"full_results": results}
 
 # -------------------------------------------------------------------------
-# Plot decomposition & latents (unchanged)
+# Plot decomposition & latents
 # -------------------------------------------------------------------------
 def plot_decomposition_overlay(X1_orig, X2_orig, shared1, shared2, event_label,
                                results_folder, save_filename):
@@ -259,9 +259,6 @@ def plot_event_latents(X1, X2, event_label, results_folder):
         print(f"{event_label} 2D plot saved to: {outpath}")
         plt.show()
 
-# -------------------------------------------------------------------------
-# New: Plot RMSE and R² results across components (fixed)
-# -------------------------------------------------------------------------
 '''def plot_pcca_results(rmse_dict, r_squared_dict, max_components):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 11))
     x_ticks = list(range(1, max_components + 1))
@@ -416,7 +413,7 @@ def compare_pipelines(event_name, data_dict, n_components=6):
     print(f"Comparison plot saved to: {save_path}")
     plt.show()
 
-    # New: Plot RMSE & R² across components
+    #Plot RMSE & R² across components
     rmse_dict = {i+1: full_results[i]["rmse"] for i in range(len(full_results))}
     r2_dict   = {i+1: full_results[i]["r_squared"] for i in range(len(full_results))}
 
@@ -427,7 +424,7 @@ def compare_pipelines(event_name, data_dict, n_components=6):
 
 
 # -------------------------------------------------------------------------
-# Main event processing (unchanged)
+# Main event processing 
 # -------------------------------------------------------------------------
 def process_event(event_name, data_dict):
     regions = list(data_dict.keys())
@@ -496,7 +493,7 @@ def process_event(event_name, data_dict):
         fig.show()
 
 # -------------------------------------------------------------------------
-# New: Plot all events’ RMSE & R² side by side
+# Plot all events’ RMSE & R² side by side
 # -------------------------------------------------------------------------
 def plot_all_events_metrics(all_rmse, all_r2, results_folder):
     events = list(all_rmse.keys())
