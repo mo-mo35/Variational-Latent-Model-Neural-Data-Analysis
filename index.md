@@ -171,20 +171,19 @@
   <br>
 
   We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. 
-
-  <div style="height: 1000px; position: relative;"> 
+  <div>
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
   <figcaption>Fig.9 - Latent Trajectories for Reward Event</figcaption>
   
-  <div style="height: 1000px; position: relative;"> 
+  <div> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
   </div>
   <figcaption>Fig.9 - Decomposition Plot for Reward Event</figcaption>
 
   We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
 
-  <div style="height: 1000px; position: relative;"> 
+  <div> 
   <img src="./assets/reward_shared_latent_scatter_latent_1.png" alt="Scatter plot for latent correlation">
   </div>
   <figcaption>Fig.9 - Correlation between latents from both regions </figcaption>
