@@ -165,6 +165,7 @@
   <div style="height: 1000px; position: relative;"> 
   <iframe src="assets/scdg_stimulus_left_right.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
+  <br>
   <figcaption>Fig.9 - SCDG Latents left/right </figcaption>
 
 
@@ -172,7 +173,6 @@
   <div style="height: 1000px; position: relative;">
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
-  <br>
   <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
 
   
