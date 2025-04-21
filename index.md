@@ -156,7 +156,7 @@
   <strong>Superior Colliculus Intermediate White Layer (SCIW)</strong>: Contains fiber tracts that connect various layers within the superior colliculus and link it with other brain regions. While not directly processing sensory inputs, it facilitates the transmission of motor commands that underlie orienting responses and visually guided actions.
 
   <div style="height: 1000px; position: relative;"> 
-  <iframe src="assets/sciw_movement_plot.html" style="width: 200%; height: 200%;" frameborder="0"></iframe>
+  <iframe src="assets/sciw_movement_left_right.html" style="width: 200%; height: 200%;" frameborder="0"></iframe>
   </div>
   <br>
   <figcaption>Fig.8 - SCIW latent variables plot</figcaption>
@@ -164,11 +164,20 @@
   <strong>Superior Colliculus Deep Grey Layer (SCDG)</strong>: Involved in triggering complex motor responses, particularly those related to defensive or escape behaviors. Contributes to the coordination of multisensory inputs into appropriate motor outputs, such as rapid turning or withdrawal movements in response to threats
 
   <div style="height: 1000px; position: relative;"> 
-  <iframe src="assets/scdg_stimulus_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
+  <iframe src="assets/scdg_stimulus_left_right.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
   <br>
   <figcaption>Fig.9 - SCDG latent variables plot</figcaption>
   <br>
+
+  We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. 
+  <div style="height: 1000px; position: relative;"> 
+  <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
+  </div>
+  <br>
+  <figcaption>Fig.9 - Decomposition Plot for Reward Event</figcaption>
+  <br>
+  
 </section>
 
 <section id="conclusions">
