@@ -167,22 +167,23 @@
   <iframe src="assets/scdg_stimulus_left_right.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
   <br>
-  <figcaption>Fig.9 - SCDG latent variables plot</figcaption>
-  <br>
+  <figcaption>Fig.9 - SCDG Latents left/right </figcaption>
+  </br>
 
   We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. 
   <div>
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
-  </div>
   <br>
   <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
   </br>
+  </div>
   
   <div> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
-  </div>
   <figcaption>Fig.11 - Decomposition Plot for Reward Event</figcaption>
+  </div>
 
+  
   We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
 
   <div> 
