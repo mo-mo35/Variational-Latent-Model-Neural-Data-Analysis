@@ -160,7 +160,6 @@
   </div>
   <br>
   <figcaption>Fig.8 - SCIW latent variables plot</figcaption>
-  </br>
   <strong>Superior Colliculus Deep Grey Layer (SCDG)</strong>: Involved in triggering complex motor responses, particularly those related to defensive or escape behaviors. Contributes to the coordination of multisensory inputs into appropriate motor outputs, such as rapid turning or withdrawal movements in response to threats
 
   <div style="height: 1000px; position: relative;"> 
@@ -168,23 +167,21 @@
   </div>
   <br>
   <figcaption>Fig.9 - SCDG Latents left/right </figcaption>
-  </br>
 
-  We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. 
-  <div style="height: 1000px; position: relative;">
+
+  <p>We can also see from plotting the latent trajectories from both regions the signals that fire or move together and can decompose the latents into the different signals to observe how they compare between regions. </p>
+  <div>
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
   <br>
   <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
-  </br>
   
   
-  <div style="height: 1000px; position: relative;"> 
+  <div> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
   </div>
   <br>
   <figcaption>Fig.11 - Decomposition Plot for Reward Event</figcaption>
-  </br>
 
   
   We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
