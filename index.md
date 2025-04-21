@@ -185,6 +185,15 @@
   <br>
   <figcaption>Fig.9 - Decomposition Plot for Reward Event</figcaption>
   <br>
+
+  We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
+
+  <div style="height: 1000px; position: relative;"> 
+  <img src="./assets/reward_shared_latent_scatter_latent_1.png" alt="Scatter plot for latent correlation">
+  </div>
+  <br>
+  <figcaption>Fig.9 - Correlation between latents from both regions </figcaption>
+  <br>
   
 </section>
 
