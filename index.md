@@ -174,19 +174,21 @@
   <div>
   <iframe src="assets/reward_plot.html" style="width: 200%; height: 200%;" frameBorder=0></iframe>
   </div>
-  <figcaption>Fig.9 - Latent Trajectories for Reward Event</figcaption>
+  <br>
+  <figcaption>Fig.10 - Latent Trajectories for Reward Event</figcaption>
+  </br>
   
   <div> 
   <img src="./assets/reward_overlay_decomposition.png" alt="Decomposition Plot for Reward Event">
   </div>
-  <figcaption>Fig.9 - Decomposition Plot for Reward Event</figcaption>
+  <figcaption>Fig.11 - Decomposition Plot for Reward Event</figcaption>
 
   We can see how the signals are enmeshed in certain areas and can be confirmed with the shared latents from the decomposed graph. There are results and decompositions for every event type. Additionally we can see how correlated the regions are based on event types from a scatter of the latent signal strength over time as seen below. 
 
   <div> 
   <img src="./assets/reward_shared_latent_scatter_latent_1.png" alt="Scatter plot for latent correlation">
   </div>
-  <figcaption>Fig.9 - Correlation between latents from both regions </figcaption>
+  <figcaption>Fig.12 - Correlation between latents from both regions </figcaption>
 
 </section>
 
@@ -195,12 +197,12 @@
   <p>To assess the performance of our model, we decided to compute the Root Mean Squared Error (RMSE) and the R-squared coefficient. RMSE measures the average difference between predicted values and actual values. On the other hand, R-squared measures the proportion of variance explained by the latent variables in the PCCA model, or simply put, signifies how well the data fits the model. Below we measure how well the canonical directions from our pCCA fitting can capture information </p>
 
   <img src="./assets/all_events_pcca_metrics.png" alt="Project Conclusions Visual Summary">
-  <figcaption>Fig.10 - Root Mean Squared Error (RMSE) and R-squared</figcaption>
+  <figcaption>Fig.13 - Root Mean Squared Error (RMSE) and R-squared</figcaption>
 
   <p> Perhaps obviously, our ability to reconstruct the latent variables improves the more we use, but diminishing returns in improvement can also be argued, and would require further exploration. We also tested a comparison of our work against a simple PCA model. </p>
 
   <img src="./assets/comparison_reward.png" alt="Project Conclusions Visual Summary">
-  <figcaption>Fig.10 - Root Mean Squared Error (RMSE) and R-squared between both models</figcaption>
+  <figcaption>Fig.14 - Root Mean Squared Error (RMSE) and R-squared between both models</figcaption>
   
   <p>Our model offers a way to find interpretable, shared and unique latent trajectories and dynamics in return for a tradeoff in accuracy and variational capture. Further work could be done in testing the robustness and strengths of the model on different quantities of latents fitted, less confident clusters, different brain regions, a different selection criteria, other methods to find shared correlations between latent structures or any combination of the above. </p>
 </section>
