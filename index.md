@@ -67,8 +67,7 @@
 
 <br>
 <section id="resources">
-  <h2>Project Resources</h2>
-  <p><a href="https://drive.google.com/file/d/1wmj2dqI0WqJormsnmI2Z7EEZR3yiyErQ/view?usp=drivesdk">Written Report</a></p>
+  <h2>Project Resources</h2>**
   <p><a href="https://github.com/Charlie-279/LVM-Neural-Data-Analysis">Github Code Repository</a></p>
   <p><a href="https://drive.google.com/file/d/11x849tWpzng_rFycxjG0shKsD8Jqqbwv/view?usp=drive_link">Project Poster</a></p>
 </section>
